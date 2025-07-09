@@ -812,22 +812,76 @@ const AdminUserManagement = () => {
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-3 rounded-lg shadow-md hover:from-indigo-700 hover:to-blue-700 transition-all font-medium mt-6"
                   onClick={async () => {
                     try {
-                      await updateDoc(doc(db, "Users", editUser.id), {
+                      // Format new document ID as Full_Name_UID
+                      const formattedName = editUser.name
+                        ? editUser.name.replace(/\s+/g, "_")
+                        : "User";
+
+                      const newId = `${formattedName}_${editUser.uid}`;
+
+                      const userData = {
                         name: editUser.name || "",
                         email: editUser.email || "",
                         phone: editUser.phone || "",
                         Class: editUser.Class || "",
                         role: editUser.role || "student",
                         batch: editUser.batch || "",
-                      });
-                      setAllUsers((prev) =>
-                        prev.map((u) =>
-                          u.id === editUser.id ? { ...u, ...editUser } : u
-                        )
-                      );
+                        // Preserve all other fields from the original user
+                        ...Object.fromEntries(
+                          Object.entries(editUser).filter(
+                            ([key]) =>
+                              ![
+                                "id",
+                                "name",
+                                "email",
+                                "phone",
+                                "Class",
+                                "role",
+                                "batch",
+                              ].includes(key)
+                          )
+                        ),
+                      };
+
+                      if (newId && newId !== editUser.id) {
+                        // Create new document with new ID
+                        await setDoc(doc(db, "Users", newId), userData);
+
+                        // Delete the old document
+                        await deleteDoc(doc(db, "Users", editUser.id));
+
+                        // Update local state
+                        setAllUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === editUser.id
+                              ? { ...userData, id: newId }
+                              : u
+                          )
+                        );
+
+                        await logEvent(
+                          `User document ID changed: ${editUser.id} to ${newId}`
+                        );
+                        showFeedback("User updated with new ID successfully");
+                      } else {
+                        // Update existing document
+                        await updateDoc(
+                          doc(db, "Users", editUser.id),
+                          userData
+                        );
+
+                        // Update local state
+                        setAllUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === editUser.id ? { ...u, ...userData } : u
+                          )
+                        );
+                        showFeedback("User updated successfully");
+                      }
+
                       setEditUser(null);
-                      showFeedback("User updated successfully");
                     } catch (error) {
+                      console.error("Update failed:", error);
                       showFeedback("Failed to update user", "error");
                     }
                   }}
