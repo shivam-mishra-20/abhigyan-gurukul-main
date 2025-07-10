@@ -52,6 +52,8 @@ import UserProfile from "./UserProfile";
 import Homework from "./Homework";
 import TestManagement from "./TestManagement";
 import Logs from "./Logs"; // Import the Logs page
+import StudentSyllabusUpdate from "./StudentSyllabusUpdate";
+import ExtraClassRequest from "./ExtraClassRequest";
 
 const ProtectedStudent = ({ children, roles }) => {
   const userRole = localStorage.getItem("userRole");
@@ -599,6 +601,22 @@ const StudentDashboard = () => {
                       </ProtectedStudent>
                     }
                   />
+                  <Route
+                    path="syllabus-update"
+                    element={
+                      <ProtectedStudent roles={["student", "teacher", "admin"]}>
+                        <StudentSyllabusUpdate />
+                      </ProtectedStudent>
+                    }
+                  />
+                  <Route
+                    path="extra-class-request"
+                    element={
+                      <ProtectedStudent roles={["student", "teacher", "admin"]}>
+                        <ExtraClassRequest />
+                      </ProtectedStudent>
+                    }
+                  />
                 </Routes>
               </motion.div>
             </AnimatePresence>
@@ -850,6 +868,50 @@ const SidebarContent = ({ location, userRole, handleNav, handleLogout }) => (
             active={location.pathname === "/student-dashboard/logs"}
             onClick={() => handleNav("/student-dashboard/logs")}
           />
+        )}
+        {userRole === "student" && (
+          <>
+            <SidebarItem
+              icon={<FaBook />}
+              label="Syllabus Update"
+              active={
+                location.pathname === "/student-dashboard/syllabus-update"
+              }
+              onClick={() => handleNav("/student-dashboard/syllabus-update")}
+            />
+            <SidebarItem
+              icon={<FaCalendarAlt />}
+              label="Extra Class Request"
+              active={
+                location.pathname === "/student-dashboard/extra-class-request"
+              }
+              onClick={() =>
+                handleNav("/student-dashboard/extra-class-request")
+              }
+            />
+          </>
+        )}
+        {["teacher", "admin"].includes(userRole) && (
+          <>
+            <SidebarItem
+              icon={<FaBook />}
+              label="View Syllabus Updates"
+              active={
+                location.pathname === "/student-dashboard/syllabus-update"
+              }
+              onClick={() => handleNav("/student-dashboard/syllabus-update")}
+            />
+            <SidebarItem
+              icon={<FaCalendarAlt />}
+              label="View Extra Class Requests"
+              active={
+                location.pathname === "/student-dashboard/extra-class-request"
+              }
+              onClick={() =>
+                handleNav("/student-dashboard/extra-class-request")
+              }
+            />
+          </>
         )}
       </div>
     </div>

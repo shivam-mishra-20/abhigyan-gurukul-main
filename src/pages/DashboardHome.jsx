@@ -18,6 +18,8 @@ import {
   FaExclamationCircle,
   FaClipboard,
   FaRegFileAlt,
+  FaPlusCircle,
+  FaCheckCircle,
 } from "react-icons/fa";
 
 // Custom hook for responsive design
@@ -159,6 +161,22 @@ const DashboardHome = ({ name }) => {
       route: "/student-dashboard/trafficdashboard", // Updated route path to match nested route
       highlight: true,
     },
+    {
+      icon: <FaCheckCircle className="text-3xl" />,
+      title: "View Syllabus Updates",
+      description: "See all student syllabus progress",
+      bg: "bg-gradient-to-br from-green-50 to-green-100 text-green-800",
+      route: "/student-dashboard/syllabus-update",
+      highlight: true,
+    },
+    {
+      icon: <FaPlusCircle className="text-3xl" />,
+      title: "View Extra Class Requests",
+      description: "See all extra class requests",
+      bg: "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800",
+      route: "/student-dashboard/extra-class-request",
+      highlight: true,
+    },
   ];
 
   const teacherCards = [
@@ -212,6 +230,22 @@ const DashboardHome = ({ name }) => {
       route: "/student-dashboard/syllabus-report",
       highlight: true,
     },
+    {
+      icon: <FaCheckCircle className="text-3xl" />,
+      title: "View Syllabus Updates",
+      description: "See all student syllabus progress",
+      bg: "bg-gradient-to-br from-green-50 to-green-100 text-green-800",
+      route: "/student-dashboard/syllabus-update",
+      highlight: true,
+    },
+    {
+      icon: <FaPlusCircle className="text-3xl" />,
+      title: "View Extra Class Requests",
+      description: "See all extra class requests",
+      bg: "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800",
+      route: "/student-dashboard/extra-class-request",
+      highlight: true,
+    },
   ];
 
   const studentCards = [
@@ -263,6 +297,22 @@ const DashboardHome = ({ name }) => {
       description: "Access syllabus and class reports",
       bg: "bg-gradient-to-br from-amber-50 to-amber-100 text-amber-800",
       route: "/student-dashboard/syllabus-report",
+      highlight: true,
+    },
+    {
+      icon: <FaCheckCircle className="text-3xl" />,
+      title: "Update Syllabus",
+      description: "Update your syllabus progress",
+      bg: "bg-gradient-to-br from-green-50 to-green-100 text-green-800",
+      route: "/student-dashboard/syllabus-update",
+      highlight: true,
+    },
+    {
+      icon: <FaPlusCircle className="text-3xl" />,
+      title: "Request Extra Class",
+      description: "Request an extra class for any topic",
+      bg: "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800",
+      route: "/student-dashboard/extra-class-request",
       highlight: true,
     },
   ];
