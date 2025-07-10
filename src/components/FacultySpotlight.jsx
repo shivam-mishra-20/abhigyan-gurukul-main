@@ -15,8 +15,8 @@ const facultyData = [
     position: "Mathematics Expert",
     image: "/AbgChndn.png", // Use existing image
     quote:
-      "Learning is a journey that never ends. My goal is to ignite the curiosity of students and guide them to discover the wonders of physics.",
-    expertise: ["Physics", "JEE Preparation", "Olympiad Training"],
+      "Mathematics is not about numbers, equations or algorithms. It's about understanding patterns and logical reasoning.",
+    expertise: ["Mathematics", "Calculus", "Competitive Exams"],
     rating: 4.9,
   },
   {
@@ -25,9 +25,9 @@ const facultyData = [
     position: "Physics Expert",
     image: "/AbgChndn.png", // Replace with actual image when available
     quote:
-      "Mathematics is not about numbers, equations or algorithms. It's about understanding patterns and logical reasoning.",
-    expertise: ["Mathematics", "Calculus", "Competitive Exams"],
-    rating: 4.8,
+      "Learning is a journey that never ends. My goal is to ignite the curiosity of students and guide them to discover the wonders of physics.",
+    expertise: ["Physics", "JEE Preparation", "Olympiad Training"],
+    rating: 4.9,
   },
 ];
 
