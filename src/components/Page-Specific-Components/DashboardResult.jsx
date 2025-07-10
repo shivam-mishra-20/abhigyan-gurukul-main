@@ -532,6 +532,11 @@ export default function DashboardResult() {
                   <option value="Biology">Biology</option>
                   <option value="Language">Hindi</option>
                   <option value="Language">Gujarati</option>
+                  <option value="Language">History</option>
+                  <option value="Language">Geography</option>
+                  <option value="Language">Political Science</option>
+                  <option value="Language">Economics</option>
+                  <option value="Language">Civics</option>
                 </motion.select>
                 <motion.input
                   variants={itemVariants}
