@@ -74,8 +74,8 @@ const SyllabusReport = () => {
   ].filter(Boolean);
 
   // Get available classes and batches
-  const availableClasses = ["8", "9", "10", "11", "12"];
-  const availableBatches = ["Lakshya", "Aadharshila", "Basic"];
+  const availableClasses = ["7", "8", "9", "10", "11", "12"];
+  const availableBatches = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
 
   // Get current user name when component mounts
   useEffect(() => {
@@ -498,7 +498,7 @@ const SyllabusReport = () => {
               onChange={(e) => setFilterBatch(e.target.value)}
             >
               <option value="">All Batches</option>
-              {availableBatches.map((batch) => (
+              {getFilteredBatches(filterClass).map((batch) => (
                 <option key={batch} value={batch}>
                   {batch}
                 </option>
@@ -1274,6 +1274,7 @@ const SyllabusReport = () => {
                   required
                 >
                   <option value="">Select class</option>
+                  <option value="7">7</option>
                   <option value="8">8</option>
                   <option value="9">9</option>
                   <option value="10">10</option>
@@ -1292,9 +1293,11 @@ const SyllabusReport = () => {
                   required
                 >
                   <option value="">Select batch</option>
-                  <option value="Lakshya">Lakshya</option>
-                  <option value="Aadharshila">Aadharshila</option>
-                  <option value="Basic">Basic</option>
+                  {getFilteredBatches(reportClass).map((batch) => (
+                    <option key={batch} value={batch}>
+                      {batch}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -1461,3 +1464,17 @@ const SyllabusReport = () => {
 };
 
 export default SyllabusReport;
+
+// Helper to filter batches based on class (customize as needed)
+function getFilteredBatches(selectedClass) {
+  // You can customize this logic if batches depend on class
+  // For now, return all batches if no class is selected
+  const allBatches = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
+  if (!selectedClass) return allBatches;
+  // Example: restrict "Commerce" to class 11/12
+  if (selectedClass === "11" || selectedClass === "12") {
+    return allBatches;
+  }
+  // Remove "Commerce" for lower classes
+  return allBatches.filter((b) => b !== "Commerce");
+}

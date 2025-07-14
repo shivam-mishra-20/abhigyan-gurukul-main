@@ -66,7 +66,14 @@ const SyllabusManager = () => {
   const userRole = localStorage.getItem("userRole");
   const userName = localStorage.getItem("studentName") || "";
 
-  const classes = ["Class 8", "Class 9", "Class 10", "Class 11", "Class 12"];
+  const classes = [
+    "Class 7",
+    "Class 8",
+    "Class 9",
+    "Class 10",
+    "Class 11",
+    "Class 12",
+  ];
   const subjects = [
     "Mathematics",
     "Physics",
@@ -76,7 +83,7 @@ const SyllabusManager = () => {
     "Social Science",
     "Computer Science",
   ];
-  const batches = ["Lakshya", "Aadharshila", "Basic", "General"];
+  const batches = ["Lakshya", "Aadharshila", "Basic", "General", "Commerce"];
 
   useEffect(() => {
     // Using onSnapshot for real-time updates instead of getDocs

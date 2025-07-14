@@ -22,6 +22,14 @@ import {
   FaGraduationCap,
 } from "react-icons/fa";
 
+const batchOptions = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
+const getFilteredBatches = (cls) => {
+  if (cls === "Class 11" || cls === "Class 12") {
+    return batchOptions;
+  }
+  return batchOptions.filter((b) => b !== "Commerce");
+};
+
 export default function DashboardResult() {
   const [students, setStudents] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
@@ -494,7 +502,7 @@ export default function DashboardResult() {
                   className="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 >
                   <option value="">All Batches</option>
-                  {batches.map((batch) => (
+                  {getFilteredBatches(selectedClass).map((batch) => (
                     <option key={batch} value={batch}>
                       {batch}
                     </option>
@@ -650,7 +658,7 @@ export default function DashboardResult() {
                   className="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 >
                   <option value="">All Batches</option>
-                  {batches.map((batch) => (
+                  {getFilteredBatches(selectedClass).map((batch) => (
                     <option key={batch} value={batch}>
                       {batch}
                     </option>
