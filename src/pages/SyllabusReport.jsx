@@ -15,7 +15,7 @@ import { logEvent } from "../utils/logEvent";
 const teachers = [
   "Pratyaksha Ma'am",
   "Dhara Ma'am",
-  "Sonia Ma'am",
+  "Soniya Ma'am",
   "Preeti Ma'am",
   "Abhigyan Sir",
   "Chandan Sir",
@@ -47,7 +47,7 @@ const SyllabusReport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterSubject, setFilterSubject] = useState("");
   const [filterDate, setFilterDate] = useState("");
-  const reportsPerPage = 3;
+  const reportsPerPage = 10;
 
   // Admin and Teacher report viewing states
   const [adminViewMode, setAdminViewMode] = useState(false);
@@ -1331,6 +1331,10 @@ const SyllabusReport = () => {
                   <option value="Biology">Biology</option>
                   <option value="Language">Language</option>
                   <option value="Social Science">Social Science</option>
+                  <option value="Economics">Economics</option>
+                  <option value="Statistics">Statistics</option>
+                  <option value="Business Studies">OCM/Business Studies</option>
+                  <option value="Accounts">Accounts</option>
                 </select>
               </div>
             </div>

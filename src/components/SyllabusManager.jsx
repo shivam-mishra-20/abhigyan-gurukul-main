@@ -74,7 +74,14 @@ const SyllabusManager = () => {
     "Biology",
     "English",
     "Social Science",
-    "Computer Science",
+    "Statistics",
+    "Economics",
+    "OCM/BSD",
+    "Accounts",
+    "History",
+    "Geography",
+    "Political Science",
+    "Civics",
   ];
   const batches = ["Lakshya", "Aadharshila", "Basic", "General"];
 
