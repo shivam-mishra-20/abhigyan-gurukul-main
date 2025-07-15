@@ -169,7 +169,16 @@ const AdminUserManagement = () => {
     }
   };
 
-  const branchOptions = ["Lakshya", "Aadharshila", "Basic"];
+  // Add Commerce to branchOptions
+  const branchOptions = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
+
+  // Helper to filter batches based on class
+  const getFilteredBatches = (cls) => {
+    if (cls === "Class 11" || cls === "Class 12") {
+      return branchOptions;
+    }
+    return branchOptions.filter((b) => b !== "Commerce");
+  };
 
   const handleBatchChange = async (userId, newBatch) => {
     try {
@@ -330,10 +339,12 @@ const AdminUserManagement = () => {
             value={selectedClass}
           >
             <option value="All">All Classes</option>
+            <option value="Class 7">Class 7</option>
             <option value="Class 8">Class 8</option>
             <option value="Class 9">Class 9</option>
             <option value="Class 10">Class 10</option>
             <option value="Class 11">Class 11</option>
+            <option value="Class 12">Class 12</option>
           </motion.select>
 
           <motion.select
@@ -356,7 +367,7 @@ const AdminUserManagement = () => {
             value={selectedBatch}
           >
             <option value="All">All Batches</option>
-            {branchOptions.map((b) => (
+            {getFilteredBatches(selectedClass).map((b) => (
               <option key={b} value={b}>
                 {b}
               </option>
@@ -487,7 +498,7 @@ const AdminUserManagement = () => {
                               }
                             >
                               <option value="">— select —</option>
-                              {branchOptions.map((b) => (
+                              {getFilteredBatches(user.Class).map((b) => (
                                 <option key={b} value={b}>
                                   {b}
                                 </option>
@@ -762,10 +773,12 @@ const AdminUserManagement = () => {
                     }
                   >
                     <option value="">Select Class</option>
+                    <option value="Class 7">Class 7</option>
                     <option value="Class 8">Class 8</option>
                     <option value="Class 9">Class 9</option>
                     <option value="Class 10">Class 10</option>
                     <option value="Class 11">Class 11</option>
+                    <option value="Class 12">Class 12</option>
                   </select>
                 </motion.div>
 
@@ -781,9 +794,11 @@ const AdminUserManagement = () => {
                     }
                   >
                     <option value="">Select Batch</option>
-                    <option value="Lakshya">Lakshya</option>
-                    <option value="Aadharshila">Aadharshila</option>
-                    <option value="Basic">Basic</option>
+                    {getFilteredBatches(editUser.Class).map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
                   </select>
                 </motion.div>
 
