@@ -24,10 +24,7 @@ import {
 
 const batchOptions = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
 const getFilteredBatches = (cls) => {
-  if (cls === "Class 11" || cls === "Class 12") {
-    return batchOptions;
-  }
-  return batchOptions.filter((b) => b !== "Commerce");
+  return batchOptions;
 };
 
 export default function DashboardResult() {
@@ -545,6 +542,9 @@ export default function DashboardResult() {
                   <option value="Language">Political Science</option>
                   <option value="Language">Economics</option>
                   <option value="Language">Civics</option>
+                  <option value="Language">Accounts</option>
+                  <option value="Language">OCM</option>
+                  <option value="Language">BST</option>
                 </motion.select>
                 <motion.input
                   variants={itemVariants}
@@ -712,6 +712,14 @@ export default function DashboardResult() {
                     <option value="Biology">Biology</option>
                     <option value="Language">Hindi</option>
                     <option value="Language">Gujarati</option>
+                    <option value="Language">History</option>
+                    <option value="Language">Geography</option>
+                    <option value="Language">Political Science</option>
+                    <option value="Language">Economics</option>
+                    <option value="Language">Civics</option>
+                    <option value="Language">Accounts</option>
+                    <option value="Language">OCM</option>
+                    <option value="Language">BST</option>
                   </select>
                 </motion.div>
 

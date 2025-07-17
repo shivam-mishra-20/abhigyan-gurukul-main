@@ -1467,14 +1467,6 @@ export default SyllabusReport;
 
 // Helper to filter batches based on class (customize as needed)
 function getFilteredBatches(selectedClass) {
-  // You can customize this logic if batches depend on class
-  // For now, return all batches if no class is selected
-  const allBatches = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
-  if (!selectedClass) return allBatches;
-  // Example: restrict "Commerce" to class 11/12
-  if (selectedClass === "11" || selectedClass === "12") {
-    return allBatches;
-  }
-  // Remove "Commerce" for lower classes
-  return allBatches.filter((b) => b !== "Commerce");
+  // Always show all batches, including Commerce
+  return ["Lakshya", "Aadharshila", "Basic", "Commerce"];
 }
