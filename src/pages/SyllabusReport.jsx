@@ -1465,3 +1465,9 @@ const SyllabusReport = () => {
 };
 
 export default SyllabusReport;
+
+// Helper to filter batches based on class (customize as needed)
+function getFilteredBatches(selectedClass) {
+  // Always show all batches, including Commerce
+  return ["Lakshya", "Aadharshila", "Basic", "Commerce"];
+}
