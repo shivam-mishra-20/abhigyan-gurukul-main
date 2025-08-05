@@ -74,8 +74,8 @@ const SyllabusReport = () => {
   ].filter(Boolean);
 
   // Get available classes and batches
-  const availableClasses = ["8", "9", "10", "11", "12"];
-  const availableBatches = ["Lakshya", "Aadharshila", "Basic"];
+  const availableClasses = ["7", "8", "9", "10", "11", "12"];
+  const availableBatches = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
 
   // Get current user name when component mounts
   useEffect(() => {
@@ -1274,6 +1274,7 @@ const SyllabusReport = () => {
                   required
                 >
                   <option value="">Select class</option>
+                  <option value="7">7</option>
                   <option value="8">8</option>
                   <option value="9">9</option>
                   <option value="10">10</option>
@@ -1295,6 +1296,7 @@ const SyllabusReport = () => {
                   <option value="Lakshya">Lakshya</option>
                   <option value="Aadharshila">Aadharshila</option>
                   <option value="Basic">Basic</option>
+                  <option value="Commerce">Commerce</option>
                 </select>
               </div>
             </div>
