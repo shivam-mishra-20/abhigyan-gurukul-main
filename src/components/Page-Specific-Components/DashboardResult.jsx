@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -48,6 +50,9 @@ export default function DashboardResult() {
   const [studentResults, setStudentResults] = useState([]);
   const [filterSubject, setFilterSubject] = useState("");
   const [filterDate, setFilterDate] = useState("");
+
+  // Sorting for student view results
+  const [studentSortBy, setStudentSortBy] = useState("date-desc");
 
   // For Admin/Teacher to view results
   const [selectedViewClass, setSelectedViewClass] = useState("");
@@ -249,6 +254,47 @@ export default function DashboardResult() {
     } finally {
       setIsViewLoading(false); // Clear view loading state
     }
+  };
+
+  // Helper to get the best datetime for ordering a result (prefer createdAt for time precision)
+  const getResultDateTime = (res) => {
+    if (!res) return new Date(0);
+    if (res.createdAt) {
+      const d = new Date(res.createdAt);
+      if (!isNaN(d)) return d;
+    }
+    if (res.testDate) {
+      // testDate expected in yyyy-mm-dd format; use midnight UTC/local as fallback
+      const d = new Date(res.testDate + "T00:00:00");
+      if (!isNaN(d)) return d;
+    }
+    return new Date(0);
+  };
+
+  // Sorted + filtered results for student to ensure latest test (with time) shows first
+  const getSortedFilteredStudentResults = () => {
+    const list = filteredStudentResults ? [...filteredStudentResults] : [];
+    switch (studentSortBy) {
+      case "date-asc":
+        list.sort((a, b) => getResultDateTime(a) - getResultDateTime(b));
+        break;
+      case "date-desc":
+        list.sort((a, b) => getResultDateTime(b) - getResultDateTime(a));
+        break;
+      case "marks-desc":
+        list.sort((a, b) => (Number(b.marks) || 0) - (Number(a.marks) || 0));
+        break;
+      case "marks-asc":
+        list.sort((a, b) => (Number(a.marks) || 0) - (Number(b.marks) || 0));
+        break;
+      case "subject":
+        list.sort((a, b) => (a.subject || "").localeCompare(b.subject || ""));
+        break;
+      default:
+        // default to newest first
+        list.sort((a, b) => getResultDateTime(b) - getResultDateTime(a));
+    }
+    return list;
   };
 
   const getGradeColor = (marks, outOf) => {
@@ -853,6 +899,20 @@ export default function DashboardResult() {
                   onChange={(e) => setFilterDate(e.target.value)}
                 />
               </div>
+              <div className="relative w-48">
+                <label className="sr-only">Sort By</label>
+                <select
+                  value={studentSortBy}
+                  onChange={(e) => setStudentSortBy(e.target.value)}
+                  className="p-2 border border-indigo-200 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="date-desc">Date (Latest First)</option>
+                  <option value="date-asc">Date (Oldest First)</option>
+                  <option value="marks-desc">Marks (Highest First)</option>
+                  <option value="marks-asc">Marks (Lowest First)</option>
+                  <option value="subject">Subject (A-Z)</option>
+                </select>
+              </div>
             </div>
           </motion.div>
 
@@ -871,7 +931,7 @@ export default function DashboardResult() {
                 <p className="mt-3 text-indigo-600">Loading results...</p>
               </div>
             </motion.div>
-          ) : filteredStudentResults.length === 0 ? (
+          ) : getSortedFilteredStudentResults().length === 0 ? (
             <motion.div
               variants={itemVariants}
               className="text-center p-6 bg-gray-50 rounded-lg border border-gray-200"
@@ -890,7 +950,7 @@ export default function DashboardResult() {
             </motion.div>
           ) : (
             <motion.div variants={containerVariants} className="grid gap-4">
-              {filteredStudentResults.map((res, idx) => {
+              {getSortedFilteredStudentResults().map((res, idx) => {
                 const gradeClass = getGradeColor(res.marks, res.outOf);
                 const percentage = ((res.marks / res.outOf) * 100).toFixed(1);
                 // const docId = res.id || res.docId; // Not needed for students
