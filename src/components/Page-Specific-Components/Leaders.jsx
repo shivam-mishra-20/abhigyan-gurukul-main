@@ -58,7 +58,7 @@ const Leaders = ({ info, isFlagged }) => {
       subject: "English/EVS",
       img: "/PratyakshaCropped.jpg",
     },
-    { name: "Shivam Sir", subject: "Tech Team", img: "/Shivam.png" },
+    //{ name: "Shivam Sir", subject: "Tech Team", img: "/Shivam.png" },
     // { name: "Sarman Sir", subject: "Tech Team", img: "/Sarman.jpg" },
   ];
 

@@ -47,6 +47,8 @@ const SyllabusReport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterSubject, setFilterSubject] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  // Sorting state for student view
+  const [studentSortBy, setStudentSortBy] = useState("date-desc");
   const reportsPerPage = 10;
 
   // Admin and Teacher report viewing states
@@ -60,8 +62,10 @@ const SyllabusReport = () => {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [adminCurrentPage, setAdminCurrentPage] = useState(1);
+  // Sorting state for admin view
+  const [adminSortBy, setAdminSortBy] = useState("date-desc");
 
-  const reportsExist = reports.length > 0;
+  // ...existing code...
 
   // Get list of all available subjects from reports
   const availableSubjects = [
@@ -125,47 +129,47 @@ const SyllabusReport = () => {
     setReportDate(new Date().toISOString().split("T")[0]); // Set today's date as default
   }, []);
 
-  // Fetch reports for admin/teacher view
-  const fetchAdminReports = async () => {
-    if (!adminViewMode) return;
-
-    setAdminLoading(true);
-    try {
-      let q = collection(db, "SyllabusReport");
-      let constraints = [];
-
-      if (filterClass) {
-        constraints.push(where("class", "==", `Class ${filterClass}`));
-      }
-
-      if (filterBatch) {
-        constraints.push(where("batch", "==", filterBatch));
-      }
-
-      if (constraints.length > 0) {
-        q = query(q, ...constraints);
-      } else {
-        q = query(q);
-      }
-
-      const snapshot = await getDocs(q);
-      const fetchedReports = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setAdminReports(fetchedReports);
-    } catch (error) {
-      console.error("Error fetching admin reports:", error);
-    } finally {
-      setAdminLoading(false);
-    }
-  };
-
+  // Fetch reports for admin/teacher view when adminViewMode or filters change
   useEffect(() => {
+    const fetchAdminReports = async () => {
+      if (!adminViewMode) return;
+
+      setAdminLoading(true);
+      try {
+        let q = collection(db, "SyllabusReport");
+        let constraints = [];
+
+        if (filterClass) {
+          constraints.push(where("class", "==", `Class ${filterClass}`));
+        }
+
+        if (filterBatch) {
+          constraints.push(where("batch", "==", filterBatch));
+        }
+
+        if (constraints.length > 0) {
+          q = query(q, ...constraints);
+        } else {
+          q = query(q);
+        }
+
+        const snapshot = await getDocs(q);
+        const fetchedReports = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAdminReports(fetchedReports);
+      } catch (error) {
+        console.error("Error fetching admin reports:", error);
+      } finally {
+        setAdminLoading(false);
+      }
+    };
+
     if (userRole === "admin" || userRole === "teacher") {
       fetchAdminReports();
     }
-  }, [adminViewMode, filterClass, filterBatch]);
+  }, [adminViewMode, filterClass, filterBatch, userRole]);
 
   // Handle deleting a report
   const handleDeleteReport = async (reportId) => {
@@ -227,6 +231,40 @@ const SyllabusReport = () => {
     return true;
   });
 
+  // Helper: get best date/time for a report (prefer createdAt timestamp if available)
+  const getReportDateTime = (report) => {
+    if (
+      report &&
+      report.createdAt &&
+      typeof report.createdAt.toDate === "function"
+    ) {
+      return report.createdAt.toDate();
+    }
+    // fallback: report.date might be YYYY-MM-DD or a human string
+    if (report && report.date) return new Date(report.date);
+    return new Date(0);
+  };
+
+  // Return a sorted copy of filteredReports according to studentSortBy
+  const getSortedFilteredReports = () => {
+    const arr = [...filteredReports];
+    switch (studentSortBy) {
+      case "date-asc":
+        return arr.sort((a, b) => getReportDateTime(a) - getReportDateTime(b));
+      case "subject-asc":
+        return arr.sort((a, b) =>
+          (a.subjects || "").localeCompare(b.subjects || "")
+        );
+      case "subject-desc":
+        return arr.sort((a, b) =>
+          (b.subjects || "").localeCompare(a.subjects || "")
+        );
+      case "date-desc":
+      default:
+        return arr.sort((a, b) => getReportDateTime(b) - getReportDateTime(a));
+    }
+  };
+
   // Apply filters to admin reports
   const filteredAdminReports = adminReports.filter((report) => {
     // Filter by subject if filter is active
@@ -242,24 +280,46 @@ const SyllabusReport = () => {
     return true;
   });
 
-  // Calculate pagination
+  // Return a sorted copy of filteredAdminReports according to adminSortBy
+  const getSortedFilteredAdminReports = () => {
+    const arr = [...filteredAdminReports];
+    switch (adminSortBy) {
+      case "date-asc":
+        return arr.sort((a, b) => getReportDateTime(a) - getReportDateTime(b));
+      case "subject-asc":
+        return arr.sort((a, b) =>
+          (a.subjects || "").localeCompare(b.subjects || "")
+        );
+      case "subject-desc":
+        return arr.sort((a, b) =>
+          (b.subjects || "").localeCompare(a.subjects || "")
+        );
+      case "date-desc":
+      default:
+        return arr.sort((a, b) => getReportDateTime(b) - getReportDateTime(a));
+    }
+  };
+
+  // Calculate pagination (use sorted reports)
   const indexOfLastReport = currentPage * reportsPerPage;
   const indexOfFirstReport = indexOfLastReport - reportsPerPage;
-  const currentReports = filteredReports.slice(
+  const sortedFilteredReports = getSortedFilteredReports();
+  const currentReports = sortedFilteredReports.slice(
     indexOfFirstReport,
     indexOfLastReport
   );
-  const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+  const totalPages = Math.ceil(sortedFilteredReports.length / reportsPerPage);
 
   // Calculate pagination for admin view
   const indexOfLastAdminReport = adminCurrentPage * reportsPerPage;
   const indexOfFirstAdminReport = indexOfLastAdminReport - reportsPerPage;
-  const currentAdminReports = filteredAdminReports.slice(
+  const sortedFilteredAdminReports = getSortedFilteredAdminReports();
+  const currentAdminReports = sortedFilteredAdminReports.slice(
     indexOfFirstAdminReport,
     indexOfLastAdminReport
   );
   const totalAdminPages = Math.ceil(
-    filteredAdminReports.length / reportsPerPage
+    sortedFilteredAdminReports.length / reportsPerPage
   );
 
   // Change page
@@ -542,6 +602,26 @@ const SyllabusReport = () => {
               value={adminFilterDate}
               onChange={(e) => setAdminFilterDate(e.target.value)}
             />
+          </div>
+
+          <div>
+            <label
+              htmlFor="adminSort"
+              className="block text-xs font-medium text-gray-500 mb-1"
+            >
+              Sort
+            </label>
+            <select
+              id="adminSort"
+              className="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={adminSortBy}
+              onChange={(e) => setAdminSortBy(e.target.value)}
+            >
+              <option value="date-desc">Latest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="subject-asc">Subject A → Z</option>
+              <option value="subject-desc">Subject Z → A</option>
+            </select>
           </div>
 
           {(adminFilterSubject ||
@@ -991,6 +1071,26 @@ const SyllabusReport = () => {
                         value={filterDate}
                         onChange={(e) => setFilterDate(e.target.value)}
                       />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="sortReports"
+                        className="block text-xs font-medium text-gray-500 mb-1"
+                      >
+                        Sort
+                      </label>
+                      <select
+                        id="sortReports"
+                        className="text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={studentSortBy}
+                        onChange={(e) => setStudentSortBy(e.target.value)}
+                      >
+                        <option value="date-desc">Latest first</option>
+                        <option value="date-asc">Oldest first</option>
+                        <option value="subject-asc">Subject A → Z</option>
+                        <option value="subject-desc">Subject Z → A</option>
+                      </select>
                     </div>
                   </div>
 
@@ -1467,9 +1567,3 @@ const SyllabusReport = () => {
 };
 
 export default SyllabusReport;
-
-// Helper to filter batches based on class (customize as needed)
-function getFilteredBatches(selectedClass) {
-  // Always show all batches, including Commerce
-  return ["Lakshya", "Aadharshila", "Basic", "Commerce"];
-}

@@ -7,9 +7,8 @@ import {
   where,
   getDocs,
   doc,
-  getDoc,
-  setDoc,
-  updateDoc,
+  writeBatch,
+  documentId,
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -28,10 +27,19 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import { logEvent } from "../../utils/logEvent";
+// Client-side PDF parsing
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+try {
+  GlobalWorkerOptions.workerSrc = workerSrc;
+} catch {
+  // ignore worker setup issues in environments where not supported
+}
 
 export default function DashboardAttendance() {
   // — state —
   const [file, setFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
   const [status, setStatus] = useState("");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(""); // "YYYY-MM"
@@ -43,6 +51,8 @@ export default function DashboardAttendance() {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBatch, setSelectedBatch] = useState("");
   const [leaveData, setLeaveData] = useState([]);
+  const [studentSort, setStudentSort] = useState("latest"); // 'latest'|'oldest'
+  const [adminSort, setAdminSort] = useState("latest"); // 'latest'|'name'
   const recordsPerPage = 6;
 
   const userRole = localStorage.getItem("userRole");
@@ -70,21 +80,190 @@ export default function DashboardAttendance() {
     },
   };
 
-  const tableRowVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i) => ({
-      opacity: 1,
-      x: 0,
-      transition: {
-        delay: i * 0.05,
-        type: "spring",
-        stiffness: 100,
-      },
-    }),
-    exit: { opacity: 0, x: 20 },
-  };
+  // tableRowVariants reserved for future animations
 
   // — helpers —
+  // small helpers
+  const chunk = (arr, size) => {
+    const out = [];
+    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+    return out;
+  };
+
+  const buildDocId = (name, cls) =>
+    `${name.replace(/\s+/g, "").toLowerCase()}_${cls
+      .replace(/\s+/g, "")
+      .toLowerCase()}`;
+
+  // PDF to text
+  const pdfToText = async (file) => {
+    const buf = await file.arrayBuffer();
+    const pdf = await getDocument({ data: new Uint8Array(buf) }).promise;
+    const pageIndexes = Array.from({ length: pdf.numPages }, (_, i) => i + 1);
+    // Parallelize page extraction for speed
+    const pageTexts = await Promise.all(
+      pageIndexes.map(async (pageNum) => {
+        const page = await pdf.getPage(pageNum);
+        const content = await page.getTextContent();
+        const yMap = new Map();
+        for (const item of content.items) {
+          const y = Math.round(item.transform?.[5] || 0);
+          if (!yMap.has(y)) yMap.set(y, []);
+          yMap.get(y).push({ x: item.transform?.[4] || 0, s: item.str });
+        }
+        const ys = Array.from(yMap.keys()).sort((a, b) => b - a);
+        const lines = [];
+        for (const y of ys) {
+          const parts = yMap
+            .get(y)
+            .sort((a, b) => a.x - b.x)
+            .map((t) => t.s.trim())
+            .filter(Boolean);
+          if (parts.length) lines.push(parts.join(" "));
+        }
+        return lines.join("\n");
+      })
+    );
+    return pageTexts.join("\n\n");
+  };
+
+  // Normalizers / parsers (mirror server-side)
+  const toISODate = (raw) => {
+    if (!raw) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+    const m = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (m) {
+      const [, d, mo, y] = m;
+      return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(
+        2,
+        "0"
+      )}`;
+    }
+    const t = new Date(raw);
+    if (!isNaN(t)) return t.toISOString().split("T")[0];
+    return "";
+  };
+
+  const normalizeTime = (t) => {
+    if (!t) return "";
+    const s = String(t).trim();
+    if (/^\d{1,2}:\d{2}\s?(AM|PM)$/i.test(s)) {
+      const [hm, ap] = s.split(/\s+/);
+      const [h, m] = hm.split(":");
+      return `${Number(h)}:${m} ${ap.toUpperCase()}`;
+    }
+    if (/^\d{1,2}:\d{2}$/.test(s)) {
+      let [h, m] = s.split(":");
+      let hh = Number(h);
+      const ap = hh >= 12 ? "PM" : "AM";
+      if (hh === 0) hh = 12;
+      if (hh > 12) hh -= 12;
+      return `${hh}:${m} ${ap}`;
+    }
+    if (/^\d{1,2}\s?(AM|PM)$/i.test(s)) {
+      const [h, ap] = s.split(/\s*/);
+      return `${Number(h)}:00 ${ap.toUpperCase()}`;
+    }
+    return s;
+  };
+
+  const extractRowsMonthlyPerStudent = (text) => {
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const rows = [];
+    let currentName = "";
+    const setNameFromLine = (line, nextLine) => {
+      const m = line.match(/\bName\b[:\-\s]*([^|]+)/i);
+      if (m) {
+        const val = m[1].trim();
+        if (val && !/^(Report|Dept|Students|Empcode)/i.test(val)) return val;
+        if (nextLine && nextLine.length < 80) return nextLine.trim();
+      }
+      return "";
+    };
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/\bName\b/i.test(line)) {
+        const c = setNameFromLine(line, lines[i + 1]);
+        if (c) currentName = c;
+      }
+      const dm = line.match(/^(\d{2}\/\d{2}\/\d{4})\b/);
+      if (!dm) continue;
+      const rawDate = dm[1];
+      const timeMatches = line.match(/\b(\d{1,2}:\d{2})\b/g) || [];
+      let clockTokens = timeMatches.slice();
+      if (clockTokens.length >= 3)
+        clockTokens = clockTokens.slice(0, clockTokens.length - 3);
+      let clockIn = "";
+      let clockOut = "";
+      if (clockTokens.length >= 1) {
+        clockIn = clockTokens[0];
+        if (clockTokens.length >= 2)
+          clockOut = clockTokens[clockTokens.length - 1];
+      }
+      const dayAndDate = toISODate(rawDate);
+      if (!dayAndDate) continue;
+      rows.push({
+        name: currentName || "",
+        Class: "",
+        clockIn: clockIn || "--:--",
+        clockOut: clockOut || "--:--",
+        dayAndDate,
+      });
+    }
+    return rows.filter((r) => r.name && r.dayAndDate);
+  };
+
+  const extractAttendanceRowsGeneric = (text) => {
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const rows = [];
+    for (const line of lines) {
+      const parts = line.split(/\s*,\s*/);
+      if (parts.length >= 5) {
+        const [name, Class, clockIn, clockOut, dateStr] = parts;
+        const d = toISODate(dateStr);
+        if (name && Class && d)
+          rows.push({ name, Class, clockIn, clockOut, dayAndDate: d });
+      }
+    }
+    return rows;
+  };
+
+  // Efficient class lookups for a set of names using chunked 'in' queries
+  const fetchClassesForNames = async (names) => {
+    const result = new Map();
+    if (!names || names.size === 0) return result;
+    const unique = Array.from(names);
+    // Query Users collection first (authoritative)
+    for (const group of chunk(unique, 10)) {
+      const snap = await getDocs(
+        query(collection(db, "Users"), where("name", "in", group))
+      );
+      snap.forEach((d) => {
+        const data = d.data();
+        const cls = data.Class || data.class || "";
+        if (data.name) result.set(data.name, cls);
+      });
+    }
+    // For any not found, fall back to studentLeaves
+    const notFound = unique.filter((n) => !result.has(n));
+    for (const group of chunk(notFound, 10)) {
+      if (group.length === 0) break;
+      const snap = await getDocs(
+        query(collection(db, "studentLeaves"), where("name", "in", group))
+      );
+      snap.forEach((d) => {
+        const data = d.data();
+        if (data.name) result.set(data.name, data.Class || "");
+      });
+    }
+    return result;
+  };
   const excelDateToISO = (value) => {
     if (!value) return "";
     // Excel serial?
@@ -101,6 +280,12 @@ export default function DashboardAttendance() {
     setStatus("");
     setShowStatus(false);
     if (e.target.files[0]) setFile(e.target.files[0]);
+  };
+
+  const handlePdfChange = (e) => {
+    setStatus("");
+    setShowStatus(false);
+    if (e.target.files[0]) setPdfFile(e.target.files[0]);
   };
 
   // — Admin/Teacher: process & upload Excel —
@@ -121,50 +306,98 @@ export default function DashboardAttendance() {
       const sheet = wb.Sheets[wb.SheetNames[0]];
 
       const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: "" });
-      console.log("Parsed rows:", rows);
 
+      // Group rows by docId and dedupe by day within this upload
+      const grouped = new Map(); // docId -> { name, Class, entries: Map(day->entry) }
       for (let row of rows) {
-        // 1️⃣ normalize headers to lowercase keys
         const norm = {};
         Object.entries(row).forEach(([k, v]) => {
           norm[k.trim().toLowerCase()] = v;
         });
-
         const cls = norm["class"]?.toString().trim();
         const name = norm["name"]?.toString().trim();
         const clockIn = norm["clock in"]?.toString().trim();
         const clockOut = norm["clock out"]?.toString().trim();
         const rawDate = norm["day and date"];
-        // 2️⃣ convert date to ISO format
-        // Excel date format (serial number) or string date (e.g., "2023-10-01")
         const dayAndDate = excelDateToISO(rawDate);
-
-        if (!cls || !name || !clockIn || !clockOut || !dayAndDate) {
-          console.warn("Skipping malformed row:", row);
-          continue;
-        }
-
-        // build doc ID (must match your sync logic)
-        const docId = `${name.replace(/\s+/g, "").toLowerCase()}_${cls
-          .replace(/\s+/g, "")
-          .toLowerCase()}`;
-        const ref = doc(db, "studentLeaves", docId);
-
-        // ensure it exists
-        const snap = await getDoc(ref);
-        if (!snap.exists()) {
-          await setDoc(ref, { name, Class: cls, attendance: [] });
-        }
-
-        // append if not duplicate
-        const data = (await getDoc(ref)).data();
-        const arr = data.attendance || [];
-        if (!arr.some((e) => e.dayAndDate === dayAndDate)) {
-          await updateDoc(ref, {
-            attendance: arrayUnion({ clockIn, clockOut, dayAndDate }),
+        if (!cls || !name || !clockIn || !clockOut || !dayAndDate) continue;
+        const docId = buildDocId(name, cls);
+        if (!grouped.has(docId))
+          grouped.set(docId, {
+            name,
+            Class: cls,
+            entries: new Map(),
           });
+        const g = grouped.get(docId);
+        if (!g.entries.has(dayAndDate))
+          g.entries.set(dayAndDate, { clockIn, clockOut, dayAndDate });
+      }
+
+      const docIds = Array.from(grouped.keys());
+      // Read existing docs in chunks of 10 using documentId() "in" queries
+      const existing = new Map(); // docId -> Set(day)
+      for (const ids of chunk(docIds, 10)) {
+        const snap = await getDocs(
+          query(collection(db, "studentLeaves"), where(documentId(), "in", ids))
+        );
+        snap.forEach((d) => {
+          const data = d.data();
+          const days = new Set(
+            (data.attendance || []).map((e) => e.dayAndDate)
+          );
+          existing.set(d.id, days);
+        });
+      }
+
+      // Prepare batched writes (limit ~500 ops per batch for safety)
+      const batches = [];
+      let batch = writeBatch(db);
+      let ops = 0;
+      let updatedCount = 0;
+      const flush = async () => {
+        if (ops === 0) return;
+        batches.push(batch.commit());
+        batch = writeBatch(db);
+        ops = 0;
+      };
+
+      for (const [docId, info] of grouped.entries()) {
+        const ref = doc(db, "studentLeaves", docId);
+        const daysExisting = existing.get(docId) || new Set();
+        const allEntries = Array.from(info.entries.values());
+        const newEntries = allEntries.filter(
+          (e) => !daysExisting.has(e.dayAndDate)
+        );
+        if (existing.has(docId)) {
+          if (newEntries.length > 0) {
+            // Chunk updates to avoid very large arrayUnion payloads
+            for (const part of chunk(newEntries, 100)) {
+              batch.update(ref, { attendance: arrayUnion(...part) });
+              ops++;
+              updatedCount += part.length;
+              if (ops >= 450) await flush();
+            }
+          }
+        } else {
+          // New doc: set all entries at once
+          batch.set(ref, {
+            name: info.name,
+            Class: info.Class,
+            attendance: allEntries,
+          });
+          ops++;
+          updatedCount += allEntries.length;
+          if (ops >= 450) await flush();
         }
       }
+
+      await flush();
+      await Promise.all(batches);
+
+      // Report to console for debugging/confirmation
+      console.log(
+        `Attendance upload complete: parsed ${rows.length} rows, added ${updatedCount} new entries to studentLeaves.`
+      );
 
       setStatus("✅ Attendance uploaded successfully!");
       setShowStatus(true);
@@ -175,6 +408,135 @@ export default function DashboardAttendance() {
     } catch (e) {
       console.error(e);
       setStatus("❌ Failed to upload attendance.");
+      setShowStatus(true);
+      setTimeout(() => setShowStatus(false), 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // — Admin/Teacher: process PDF entirely on the client (no server) —
+  const handleUploadPdf = async () => {
+    if (!pdfFile) {
+      setStatus("⚠️ Please select a PDF file first.");
+      setShowStatus(true);
+      setTimeout(() => setShowStatus(false), 3000);
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      setStatus("⏳ Processing PDF in browser...");
+      setShowStatus(true);
+      const text = await pdfToText(pdfFile);
+      // Prefer monthly per-student format, then fallback
+      let rows = extractRowsMonthlyPerStudent(text);
+      if (!rows || rows.length === 0) rows = extractAttendanceRowsGeneric(text);
+      if (!rows || rows.length === 0)
+        throw new Error("No attendance rows found in PDF");
+
+      // Resolve missing Classes in bulk
+      const namesNeedingClass = new Set(
+        rows
+          .filter((r) => !r.Class)
+          .map((r) => r.name?.trim())
+          .filter(Boolean)
+      );
+      const classMap = await fetchClassesForNames(namesNeedingClass);
+
+      // Group by docId and dedupe by day
+      const grouped = new Map(); // docId -> { name, Class, entries: Map(day->entry) }
+      for (const r of rows) {
+        const name = r.name?.trim();
+        const dayAndDate = r.dayAndDate;
+        if (!name || !dayAndDate) continue;
+        const cls = r.Class?.trim() || classMap.get(name) || "";
+        if (!cls) continue;
+        const docId = buildDocId(name, cls);
+        if (!grouped.has(docId))
+          grouped.set(docId, { name, Class: cls, entries: new Map() });
+        const g = grouped.get(docId);
+        if (!g.entries.has(dayAndDate))
+          g.entries.set(dayAndDate, {
+            clockIn: normalizeTime(r.clockIn || "--:--"),
+            clockOut: normalizeTime(r.clockOut || "--:--"),
+            dayAndDate,
+          });
+      }
+
+      const docIds = Array.from(grouped.keys());
+      const existing = new Map(); // docId -> Set(day)
+      for (const ids of chunk(docIds, 10)) {
+        const snap = await getDocs(
+          query(collection(db, "studentLeaves"), where(documentId(), "in", ids))
+        );
+        snap.forEach((d) => {
+          const data = d.data();
+          const days = new Set(
+            (data.attendance || []).map((e) => e.dayAndDate)
+          );
+          existing.set(d.id, days);
+        });
+      }
+
+      // Batched writes
+      const batches = [];
+      let batch = writeBatch(db);
+      let ops = 0;
+      const flush = async () => {
+        if (ops === 0) return;
+        batches.push(batch.commit());
+        batch = writeBatch(db);
+        ops = 0;
+      };
+
+      let updatedCount = 0;
+      for (const [docId, info] of grouped.entries()) {
+        const ref = doc(db, "studentLeaves", docId);
+        const daysExisting = existing.get(docId) || new Set();
+        const allEntries = Array.from(info.entries.values());
+        const newEntries = allEntries.filter(
+          (e) => !daysExisting.has(e.dayAndDate)
+        );
+        if (existing.has(docId)) {
+          if (newEntries.length > 0) {
+            for (const part of chunk(newEntries, 100)) {
+              batch.update(ref, { attendance: arrayUnion(...part) });
+              ops++;
+              updatedCount += part.length;
+              if (ops >= 450) await flush();
+            }
+          }
+        } else {
+          batch.set(ref, {
+            name: info.name,
+            Class: info.Class,
+            attendance: allEntries,
+          });
+          ops++;
+          updatedCount += allEntries.length;
+          if (ops >= 450) await flush();
+        }
+      }
+
+      await flush();
+      await Promise.all(batches);
+
+      setStatus(
+        `✅ PDF processed on client. Parsed: ${rows.length}, Updated: ${updatedCount}`
+      );
+      // Console confirmation
+      console.log(
+        `PDF attendance upload complete: parsed ${rows.length} rows, added ${updatedCount} new entries to studentLeaves.`
+      );
+      setShowStatus(true);
+      setTimeout(() => setShowStatus(false), 3000);
+      setPdfFile(null);
+      const input = document.getElementById("attendance-upload-pdf");
+      if (input) input.value = "";
+      await logEvent("Attendance uploaded via PDF (client)");
+    } catch (e) {
+      console.error(e);
+      setStatus("❌ Failed to process PDF.");
       setShowStatus(true);
       setTimeout(() => setShowStatus(false), 3000);
     } finally {
@@ -194,28 +556,37 @@ export default function DashboardAttendance() {
         query(collection(db, "Users"), where("role", "==", "student"))
       );
 
+      let batch = writeBatch(db);
+      let ops = 0;
+      let syncedCount = 0;
+      const commits = [];
+      const flush = async () => {
+        if (ops === 0) return;
+        commits.push(batch.commit());
+        batch = writeBatch(db);
+        ops = 0;
+      };
+
       for (let u of snap.docs) {
-        const { name, Class } = u.data();
+        const { name, Class, batch: studentBatch } = u.data();
         if (!name || !Class) continue;
-
-        const docId = `${name
-          .replace(/\s+/g, "")
-          .toLowerCase()}_${Class.replace(/\s+/g, "").toLowerCase()}`;
+        const docId = buildDocId(name, Class);
         const ref = doc(db, "studentLeaves", docId);
-
-        // only create if it doesn't already exist
-        const existing = await getDoc(ref);
-        if (existing.exists()) {
-          continue;
-        }
-
-        // create new doc with empty attendance array
-        await setDoc(ref, {
-          name,
-          Class,
-          attendance: [],
-        });
+        // No read: merge write will create if missing and preserve existing attendance
+        batch.set(
+          ref,
+          { name, Class, ...(studentBatch ? { batch: studentBatch } : {}) },
+          { merge: true }
+        );
+        syncedCount++;
+        ops++;
+        if (ops >= 450) await flush();
       }
+
+      await flush();
+      await Promise.all(commits);
+
+      console.log(`Synced ${syncedCount} students to 'studentLeaves'.`);
 
       setStatus("✅ Synced students to 'studentLeaves'.");
       setShowStatus(true);
@@ -258,60 +629,46 @@ export default function DashboardAttendance() {
   }, [userRole, studentName, studentClass]);
 
   // Fetch classes and batches from 'Users' and map them with 'studentLeaves' to display cumulative leave data for students.
-  useEffect(() => {
-    const fetchLeaveData = async () => {
-      try {
-        const leavesSnapshot = await getDocs(collection(db, "studentLeaves"));
-
-        const leaves = leavesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        const mappedData = leaves.map((leave) => ({
-          name: leave.studentName,
-          class: leave.class,
-          batch: leave.batch,
-          totalLeaves: leave.days || 0,
-        }));
-
-        setLeaveData(mappedData);
-      } catch (error) {
-        console.error("Error fetching leave data:", error);
-      }
-    };
-
-    fetchLeaveData();
-  }, []);
+  // Removed redundant/incorrect initial fetch to reduce startup cost
 
   // Fetch attendance data from 'studentLeaves' collection and calculate total attendance days for each student based on valid clockIn and clockOut times.
   useEffect(() => {
-    const fetchAttendanceData = async () => {
+    // Load summary for modal only when needed
+    if (!showClassAttendance) return;
+    let cancelled = false;
+    (async () => {
       try {
         const leavesSnapshot = await getDocs(collection(db, "studentLeaves"));
-
-        const attendanceData = leavesSnapshot.docs.map((doc) => {
-          const data = doc.data();
-          const totalAttendanceDays = (data.attendance || []).filter(
+        if (cancelled) return;
+        const attendanceData = leavesSnapshot.docs.map((docu) => {
+          const data = docu.data();
+          const attendance = data.attendance || [];
+          const totalAttendanceDays = attendance.filter(
             (entry) => entry.clockIn !== "--:--" && entry.clockOut !== "--:--"
           ).length;
-
+          const lastAttendanceDate =
+            attendance
+              .map((a) => a.dayAndDate)
+              .filter(Boolean)
+              .sort()
+              .reverse()[0] || null;
           return {
             name: data.name,
             class: data.Class,
-            batch: data.batch || "Unknown", // Default batch if not provided
+            batch: data.batch || "Unknown",
             totalAttendanceDays,
+            lastAttendanceDate,
           };
         });
-
         setLeaveData(attendanceData);
       } catch (error) {
         console.error("Error fetching attendance data:", error);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    fetchAttendanceData();
-  }, []);
+  }, [showClassAttendance]);
 
   // — Filtering by month —
   const filtered = attendanceRecords.filter((rec) => {
@@ -319,6 +676,13 @@ export default function DashboardAttendance() {
     const d = new Date(rec.dayAndDate);
     const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     return m === selectedMonth;
+  });
+
+  // Sorting for student view (default: latest first)
+  const sortedFiltered = filtered.slice().sort((a, b) => {
+    const da = new Date(a.dayAndDate).getTime();
+    const db = new Date(b.dayAndDate).getTime();
+    return studentSort === "latest" ? db - da : da - db;
   });
 
   // — Attendance analytics —
@@ -361,8 +725,8 @@ export default function DashboardAttendance() {
   };
 
   // — Pagination setup —
-  const totalPages = Math.ceil(filtered.length / recordsPerPage) || 1;
-  const paginated = filtered.slice(
+  const totalPages = Math.ceil(sortedFiltered.length / recordsPerPage) || 1;
+  const paginated = sortedFiltered.slice(
     (currentPage - 1) * recordsPerPage,
     currentPage * recordsPerPage
   );
@@ -380,12 +744,12 @@ export default function DashboardAttendance() {
   };
 
   // Prepare class attendance data for the modal
-  const classAttendanceList = attendanceRecords
-    .filter((rec) => selectedClass && rec.Class === selectedClass)
-    .map((rec) => ({
-      name: rec.name,
-      totalDays: rec.attendance ? rec.attendance.length : 0,
-    }));
+  // const classAttendanceList = attendanceRecords
+  //   .filter((rec) => selectedClass && rec.Class === selectedClass)
+  //   .map((rec) => ({
+  //     name: rec.name,
+  //     totalDays: rec.attendance ? rec.attendance.length : 0,
+  //   }));
 
   return (
     <motion.div
@@ -535,6 +899,67 @@ export default function DashboardAttendance() {
               </motion.button>
             </div>
 
+            {/* PDF uploader */}
+            <div className="mt-4 space-y-3">
+              <div className="relative">
+                <input
+                  id="attendance-upload-pdf"
+                  type="file"
+                  accept=".pdf"
+                  onChange={handlePdfChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                />
+                <div className="flex items-center border-2 border-dashed border-indigo-300 bg-indigo-50 rounded-lg p-4">
+                  <FaFileExcel className="text-indigo-500 text-xl mr-3 rotate-90" />
+                  <div className="flex-1">
+                    <p className="font-medium text-indigo-700">
+                      {pdfFile
+                        ? pdfFile.name
+                        : "Select Attendance PDF (any format)"}
+                    </p>
+                    <p className="text-sm text-indigo-600 opacity-70">
+                      {pdfFile
+                        ? `${(pdfFile.size / 1024).toFixed(1)} KB`
+                        : "Click or drag PDF here"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <motion.button
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isSubmitting}
+                onClick={handleUploadPdf}
+                className={`${
+                  isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600"
+                } text-white py-3 px-4 rounded-lg shadow transition flex items-center justify-center`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                      className="h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"
+                    />
+                    <span>Processing PDF...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaUpload className="mr-2" />
+                    <span>Process PDF & Upload</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+
             <motion.div
               variants={itemVariants}
               className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg border border-blue-100"
@@ -547,8 +972,12 @@ export default function DashboardAttendance() {
                 </li>
                 <li>Ensure all required fields are filled correctly</li>
                 <li>
-                  Use the 'Sync Students' button to sync student database with
-                  attendance records
+                  Use the &#39;Sync Students&#39; button to sync student
+                  database with attendance records
+                </li>
+                <li>
+                  You can also upload a PDF (daily, monthly or yearly). The
+                  system will auto-parse and update.
                 </li>
               </ol>
             </motion.div>
@@ -608,6 +1037,19 @@ export default function DashboardAttendance() {
                     ))}
                   </select>
                 </div>
+                <div className="flex gap-2 mb-4">
+                  <div className="w-1/2">
+                    <label className="sr-only">Sort By</label>
+                    <select
+                      value={adminSort}
+                      onChange={(e) => setAdminSort(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                    >
+                      <option value="latest">Latest updates</option>
+                      <option value="name">Name (A-Z)</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="max-h-64 overflow-y-auto">
                   <table className="min-w-full text-sm">
                     <thead>
@@ -616,6 +1058,7 @@ export default function DashboardAttendance() {
                         <th className="px-3 py-2 text-left">
                           Total Attendance Days
                         </th>
+                        <th className="px-3 py-2 text-left">Last Update</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -625,6 +1068,19 @@ export default function DashboardAttendance() {
                             (!selectedClass || data.class === selectedClass) &&
                             (!selectedBatch || data.batch === selectedBatch)
                         )
+                        .slice()
+                        .sort((a, b) => {
+                          if (adminSort === "name")
+                            return (a.name || "").localeCompare(b.name || "");
+                          // latest
+                          const da = a.lastAttendanceDate
+                            ? new Date(a.lastAttendanceDate).getTime()
+                            : 0;
+                          const db = b.lastAttendanceDate
+                            ? new Date(b.lastAttendanceDate).getTime()
+                            : 0;
+                          return db - da;
+                        })
                         .map((data, idx) => (
                           <tr
                             key={idx}
@@ -633,6 +1089,11 @@ export default function DashboardAttendance() {
                             <td className="px-3 py-2">{data.name}</td>
                             <td className="px-3 py-2">
                               {data.totalAttendanceDays}
+                            </td>
+                            <td className="px-3 py-2">
+                              {data.lastAttendanceDate
+                                ? formatDate(data.lastAttendanceDate)
+                                : "—"}
                             </td>
                           </tr>
                         ))}
@@ -716,6 +1177,17 @@ export default function DashboardAttendance() {
                     }}
                     className="pl-10 pr-4 py-2 w-full border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                   />
+                </div>
+                <div className="w-44">
+                  <label className="sr-only">Sort</label>
+                  <select
+                    value={studentSort}
+                    onChange={(e) => setStudentSort(e.target.value)}
+                    className="w-full border border-indigo-200 rounded-lg px-3 py-2 bg-white"
+                  >
+                    <option value="latest">Latest first</option>
+                    <option value="oldest">Oldest first</option>
+                  </select>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}

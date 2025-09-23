@@ -1,12 +1,54 @@
-# React + Vite
+# Abhigyan Gurukul
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite front-end with Firebase (client + admin SDK) and a small Express server for admin utilities.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies
+2. Configure Firebase client in `.env` with values for `VITE_FIREBASE_*` (see `src/firebaseConfig.js`).
+3. Ensure `firebase-admin.json` exists at project root (service account for Firestore Admin). Do not commit it.
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run dev` — Start Vite dev server
+- `npm run build` — Build client
+- `npm run preview` — Preview built client
+- `npm run server` — Start Express server (`server.js`)
+
+## Attendance PDF Ingestion
+
+Upload attendance in any PDF format (daily, monthly, yearly). The server parses the PDF and updates Firestore `studentLeaves` with normalized records `{ clockIn, clockOut, dayAndDate }`.
+
+### Configure client → server base URL
+
+Create `.env` in project root and set:
+
+```
+VITE_API_BASE=http://localhost:3000
+```
+
+Then run:
+
+```
+npm run server
+npm run dev
+```
+
+### How it works
+
+- Daily/tabular PDFs: rows like Name, Class, Clock In, Clock Out, Date.
+- Monthly summaries: e.g. `Name, Class: 8A, Month: 2025-07, Days: 20` → creates 20 placeholder day entries (`--:--` times).
+- Yearly summaries: e.g. `Name, Class: 8A, Year: 2025, Days: 180` → spreads placeholders from Jan 1.
+- Duplicates for same student+class+date are skipped.
+- Existing Excel upload flow remains available.
+
+### Using the UI
+
+- Visit Attendance Dashboard (non-student role)
+- Select PDF and click "Process PDF & Upload"
+- Status will show parsed rows and updated records
+
+### Notes
+
+- Parsing is heuristic; if a novel layout appears, share a sample to improve extractors.
+- Time formats are normalized to `H:MM AM/PM`; placeholders use `--:--`.
