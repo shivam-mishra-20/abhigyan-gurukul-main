@@ -9,7 +9,6 @@ import {
   doc,
   writeBatch,
   documentId,
-  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { motion, AnimatePresence } from "framer-motion";
@@ -216,6 +215,59 @@ export default function DashboardAttendance() {
     return rows.filter((r) => r.name && r.dayAndDate);
   };
 
+  // Parser for Weekly Periodic Report format (per-student blocks with Empcode/Name)
+  const extractRowsWeeklyPeriodicReport = (text) => {
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const rows = [];
+    let currentName = "";
+
+    const setNameFromPeriodic = (line) => {
+      // Example: "Empcode 10001 Name Hriday Jaiswal Total Work 8:34"
+      const m = line.match(/\bName\b[\s:-]*([^\d]+?)(?:\s+Total\b|$)/i);
+      return m ? m[1].trim() : "";
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/\bName\b/i.test(line)) {
+        const n = setNameFromPeriodic(line);
+        if (n) currentName = n;
+      }
+      // Data row starts with date like 01/10/2025
+      const dm = line.match(/^(\d{2}\/\d{2}\/\d{4})\b/);
+      if (!dm) continue;
+      const rawDate = dm[1];
+      // Collect time-like tokens, including placeholders
+      const timeTokens = line.match(/(\d{1,2}:\d{2}|--:--|—:—)/g) || [];
+      let clockIn = "";
+      let clockOut = "";
+      if (timeTokens.length >= 1) {
+        clockIn = timeTokens[0]; // INTime column
+        // OUTTime is typically the 4th time token on the row
+        if (timeTokens.length >= 4) clockOut = timeTokens[3];
+        else if (timeTokens.length >= 2)
+          clockOut = timeTokens[timeTokens.length - 1];
+      }
+      // Normalize placeholders
+      clockIn = clockIn && /(--:--|—:—)/.test(clockIn) ? "--:--" : clockIn;
+      clockOut = clockOut && /(--:--|—:—)/.test(clockOut) ? "--:--" : clockOut;
+
+      const dayAndDate = toISODate(rawDate);
+      if (!currentName || !dayAndDate) continue;
+      rows.push({
+        name: currentName,
+        Class: "",
+        clockIn: normalizeTime(clockIn || "--:--"),
+        clockOut: normalizeTime(clockOut || "--:--"),
+        dayAndDate,
+      });
+    }
+    return rows;
+  };
+
   const extractAttendanceRowsGeneric = (text) => {
     const lines = text
       .split(/\r?\n/)
@@ -335,17 +387,17 @@ export default function DashboardAttendance() {
 
       const docIds = Array.from(grouped.keys());
       // Read existing docs in chunks of 10 using documentId() "in" queries
-      const existing = new Map(); // docId -> Set(day)
+      const existing = new Map(); // docId -> existing attendance array
       for (const ids of chunk(docIds, 10)) {
         const snap = await getDocs(
           query(collection(db, "studentLeaves"), where(documentId(), "in", ids))
         );
         snap.forEach((d) => {
           const data = d.data();
-          const days = new Set(
-            (data.attendance || []).map((e) => e.dayAndDate)
+          existing.set(
+            d.id,
+            Array.isArray(data.attendance) ? data.attendance : []
           );
-          existing.set(d.id, days);
         });
       }
 
@@ -353,7 +405,7 @@ export default function DashboardAttendance() {
       const batches = [];
       let batch = writeBatch(db);
       let ops = 0;
-      let updatedCount = 0;
+      let upsertedCount = 0;
       const flush = async () => {
         if (ops === 0) return;
         batches.push(batch.commit());
@@ -363,32 +415,24 @@ export default function DashboardAttendance() {
 
       for (const [docId, info] of grouped.entries()) {
         const ref = doc(db, "studentLeaves", docId);
-        const daysExisting = existing.get(docId) || new Set();
         const allEntries = Array.from(info.entries.values());
-        const newEntries = allEntries.filter(
-          (e) => !daysExisting.has(e.dayAndDate)
-        );
+        const existingArr = existing.get(docId) || [];
+        // Build day->entry map from existing, then overwrite with incoming
+        const byDay = new Map(existingArr.map((e) => [e.dayAndDate, e]));
+        for (const e of allEntries) byDay.set(e.dayAndDate, e);
+        const finalArr = Array.from(byDay.values());
         if (existing.has(docId)) {
-          if (newEntries.length > 0) {
-            // Chunk updates to avoid very large arrayUnion payloads
-            for (const part of chunk(newEntries, 100)) {
-              batch.update(ref, { attendance: arrayUnion(...part) });
-              ops++;
-              updatedCount += part.length;
-              if (ops >= 450) await flush();
-            }
-          }
+          batch.update(ref, { attendance: finalArr });
         } else {
-          // New doc: set all entries at once
           batch.set(ref, {
             name: info.name,
             Class: info.Class,
-            attendance: allEntries,
+            attendance: finalArr,
           });
-          ops++;
-          updatedCount += allEntries.length;
-          if (ops >= 450) await flush();
         }
+        ops++;
+        upsertedCount += allEntries.length;
+        if (ops >= 450) await flush();
       }
 
       await flush();
@@ -396,7 +440,7 @@ export default function DashboardAttendance() {
 
       // Report to console for debugging/confirmation
       console.log(
-        `Attendance upload complete: parsed ${rows.length} rows, added ${updatedCount} new entries to studentLeaves.`
+        `Attendance upload complete: parsed ${rows.length} rows, upserted ${upsertedCount} day entries in studentLeaves.`
       );
 
       setStatus("✅ Attendance uploaded successfully!");
@@ -428,8 +472,15 @@ export default function DashboardAttendance() {
       setStatus("⏳ Processing PDF in browser...");
       setShowStatus(true);
       const text = await pdfToText(pdfFile);
-      // Prefer monthly per-student format, then fallback
-      let rows = extractRowsMonthlyPerStudent(text);
+      // Prefer Weekly Periodic Report format, then monthly per-student, then generic
+      let rows = [];
+      if (
+        /Weekly\s+Periodic\s+Report/i.test(text) ||
+        /\bEmpcode\b/i.test(text)
+      ) {
+        rows = extractRowsWeeklyPeriodicReport(text);
+      }
+      if (!rows || rows.length === 0) rows = extractRowsMonthlyPerStudent(text);
       if (!rows || rows.length === 0) rows = extractAttendanceRowsGeneric(text);
       if (!rows || rows.length === 0)
         throw new Error("No attendance rows found in PDF");
@@ -464,17 +515,17 @@ export default function DashboardAttendance() {
       }
 
       const docIds = Array.from(grouped.keys());
-      const existing = new Map(); // docId -> Set(day)
+      const existing = new Map(); // docId -> existing attendance array
       for (const ids of chunk(docIds, 10)) {
         const snap = await getDocs(
           query(collection(db, "studentLeaves"), where(documentId(), "in", ids))
         );
         snap.forEach((d) => {
           const data = d.data();
-          const days = new Set(
-            (data.attendance || []).map((e) => e.dayAndDate)
+          existing.set(
+            d.id,
+            Array.isArray(data.attendance) ? data.attendance : []
           );
-          existing.set(d.id, days);
         });
       }
 
@@ -489,44 +540,37 @@ export default function DashboardAttendance() {
         ops = 0;
       };
 
-      let updatedCount = 0;
+      let upsertedCount = 0;
       for (const [docId, info] of grouped.entries()) {
         const ref = doc(db, "studentLeaves", docId);
-        const daysExisting = existing.get(docId) || new Set();
         const allEntries = Array.from(info.entries.values());
-        const newEntries = allEntries.filter(
-          (e) => !daysExisting.has(e.dayAndDate)
-        );
+        const existingArr = existing.get(docId) || [];
+        const byDay = new Map(existingArr.map((e) => [e.dayAndDate, e]));
+        for (const e of allEntries) byDay.set(e.dayAndDate, e);
+        const finalArr = Array.from(byDay.values());
         if (existing.has(docId)) {
-          if (newEntries.length > 0) {
-            for (const part of chunk(newEntries, 100)) {
-              batch.update(ref, { attendance: arrayUnion(...part) });
-              ops++;
-              updatedCount += part.length;
-              if (ops >= 450) await flush();
-            }
-          }
+          batch.update(ref, { attendance: finalArr });
         } else {
           batch.set(ref, {
             name: info.name,
             Class: info.Class,
-            attendance: allEntries,
+            attendance: finalArr,
           });
-          ops++;
-          updatedCount += allEntries.length;
-          if (ops >= 450) await flush();
         }
+        ops++;
+        upsertedCount += allEntries.length;
+        if (ops >= 450) await flush();
       }
 
       await flush();
       await Promise.all(batches);
 
       setStatus(
-        `✅ PDF processed on client. Parsed: ${rows.length}, Updated: ${updatedCount}`
+        `✅ PDF processed on client. Parsed: ${rows.length}, Upserted: ${upsertedCount}`
       );
       // Console confirmation
       console.log(
-        `PDF attendance upload complete: parsed ${rows.length} rows, added ${updatedCount} new entries to studentLeaves.`
+        `PDF attendance upload complete: parsed ${rows.length} rows, upserted ${upsertedCount} day entries in studentLeaves.`
       );
       setShowStatus(true);
       setTimeout(() => setShowStatus(false), 3000);
