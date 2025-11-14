@@ -18,7 +18,8 @@ import {
   FaCog,
   FaChartArea,
   FaAccusoft,
-  FaAdn, // Added for traffic dashboard icon
+  FaAdn,
+  FaGraduationCap, // Added for admission inquiries
 } from "react-icons/fa";
 import {
   useNavigate,
@@ -54,6 +55,7 @@ import TestManagement from "./TestManagement";
 import Logs from "./Logs"; // Import the Logs page
 import StudentSyllabusUpdate from "./StudentSyllabusUpdate";
 import ExtraClassRequest from "./ExtraClassRequest";
+import AdminAdmissionInquiries from "../components/AdminAdmissionInquiries";
 
 const ProtectedStudent = ({ children, roles }) => {
   const userRole = localStorage.getItem("userRole");
@@ -586,6 +588,14 @@ const StudentDashboard = () => {
                     }
                   />
                   <Route
+                    path="admission-inquiries"
+                    element={
+                      <ProtectedStudent roles={["admin", "teacher"]}>
+                        <AdminAdmissionInquiries />
+                      </ProtectedStudent>
+                    }
+                  />
+                  <Route
                     path="userprofile"
                     element={
                       <ProtectedStudent roles={["student", "teacher", "admin"]}>
@@ -684,14 +694,26 @@ const SidebarContent = ({ location, userRole, handleNav, handleLogout }) => (
         )}
 
         {userRole === "teacher" && (
-          <SidebarItem
-            icon={<FaUsers />}
-            label="Manage Students"
-            active={
-              location.pathname === "/student-dashboard/admin/manage-users"
-            }
-            onClick={() => handleNav("/student-dashboard/admin/manage-users")}
-          />
+          <>
+            <SidebarItem
+              icon={<FaUsers />}
+              label="Manage Students"
+              active={
+                location.pathname === "/student-dashboard/admin/manage-users"
+              }
+              onClick={() => handleNav("/student-dashboard/admin/manage-users")}
+            />
+            <SidebarItem
+              icon={<FaGraduationCap />}
+              label="Admission Inquiries"
+              active={
+                location.pathname === "/student-dashboard/admission-inquiries"
+              }
+              onClick={() =>
+                handleNav("/student-dashboard/admission-inquiries")
+              }
+            />
+          </>
         )}
 
         {userRole === "admin" && (
@@ -703,6 +725,16 @@ const SidebarContent = ({ location, userRole, handleNav, handleLogout }) => (
                 location.pathname === "/student-dashboard/admin/manage-users"
               }
               onClick={() => handleNav("/student-dashboard/admin/manage-users")}
+            />
+            <SidebarItem
+              icon={<FaGraduationCap />}
+              label="Admission Inquiries"
+              active={
+                location.pathname === "/student-dashboard/admission-inquiries"
+              }
+              onClick={() =>
+                handleNav("/student-dashboard/admission-inquiries")
+              }
             />
             {/* Add Traffic Dashboard item for admin/developer only */}
             <SidebarItem
@@ -725,6 +757,16 @@ const SidebarContent = ({ location, userRole, handleNav, handleLogout }) => (
                 location.pathname === "/student-dashboard/admin/manage-users"
               }
               onClick={() => handleNav("/student-dashboard/admin/manage-users")}
+            />
+            <SidebarItem
+              icon={<FaGraduationCap />}
+              label="Admission Inquiries"
+              active={
+                location.pathname === "/student-dashboard/admission-inquiries"
+              }
+              onClick={() =>
+                handleNav("/student-dashboard/admission-inquiries")
+              }
             />
             {/* Add Traffic Dashboard item for admin/developer only */}
             <SidebarItem

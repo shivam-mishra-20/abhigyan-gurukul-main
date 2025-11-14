@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   collection,
   getDocs,
@@ -6,212 +6,326 @@ import {
   doc,
   setDoc,
   deleteDoc,
-  query,
-  where,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { logEvent } from "../utils/logEvent";
+
+const KNOWN_COLLECTIONS = [
+  "Users",
+  "studentLeaves",
+  "Results",
+  "ActualStudentResults",
+  "Complaints",
+  "HomeworkStatus",
+  "SyllabusReport",
+  "syllabus",
+  "Logs",
+  "TimeTable",
+  "PastTests",
+  "UpcomingTests",
+  "teacherLeaves",
+];
 
 const DevConsole = () => {
-  const [batches, setBatches] = useState([]);
-  const [selectedBatch, setSelectedBatch] = useState("");
-  const [batchStudents, setBatchStudents] = useState([]);
+  const [collections] = useState(KNOWN_COLLECTIONS);
+  const [selectedCol, setSelectedCol] = useState("Users");
+  const [docsList, setDocsList] = useState([]);
+  const [selectedDocId, setSelectedDocId] = useState("");
+  const [docJson, setDocJson] = useState("{}");
+  const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
 
-  useEffect(() => {
-    const fetchBatches = async () => {
-      const usersSnap = await getDocs(collection(db, "Users"));
-      const students = usersSnap.docs
-        .map((doc) => doc.data())
-        .filter((u) => u.role === "student");
-      const batchMap = {};
-      students.forEach((s) => {
-        const batch = s.batch || "";
-        batchMap[batch] = (batchMap[batch] || 0) + 1;
-      });
-
-      const sorted = Object.entries(batchMap).sort((a, b) => {
-        const extractClass = (str) => parseInt(str.match(/\d+/)?.[0] || 0);
-        const aClass = extractClass(a[0]);
-        const bClass = extractClass(b[0]);
-        return bClass - aClass;
-      });
-
-      setBatches(sorted);
-    };
-    fetchBatches();
-  }, []);
-
-  useEffect(() => {
-    const fetchStudentsByBatch = async () => {
-      if (!selectedBatch) return;
-      const q = query(
-        collection(db, "Users"),
-        where("role", "==", "student"),
-        where("batch", "==", selectedBatch)
-      );
-      const snap = await getDocs(q);
-      const data = snap.docs.map((doc) => doc.data());
-      setBatchStudents(data);
-    };
-    fetchStudentsByBatch();
-  }, [selectedBatch]);
-
-  const handleSyncResults = async () => {
+  // Fetch docs of selected collection
+  const refreshDocs = async () => {
+    if (!selectedCol) return;
+    setLoading(true);
     try {
-      toast.info("🔄 Scanning and syncing results...", { autoClose: 1500 });
+      const snap = await getDocs(collection(db, selectedCol));
+      const list = snap.docs.map((d) => ({ id: d.id, data: d.data() }));
+      setDocsList(list);
+      if (list.length > 0) {
+        setSelectedDocId(list[0].id);
+        setDocJson(JSON.stringify(list[0].data, null, 2));
+      } else {
+        setSelectedDocId("");
+        setDocJson("{}");
+      }
+    } catch (err) {
+      toast.error(`Failed to list ${selectedCol}: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      // Fetch all users
-      const usersSnap = await getDocs(collection(db, "Users"));
-      const students = usersSnap.docs
-        .map((doc) => doc.data())
-        .filter((u) => u.role === "student");
+  useEffect(() => {
+    refreshDocs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCol]);
 
-      // Fetch all results (each doc is one subject result)
-      const resultSnap = await getDocs(collection(db, "Results"));
-      const allResults = resultSnap.docs.map((doc) => doc.data());
+  const handlePickDoc = async (id) => {
+    setSelectedDocId(id);
+    try {
+      const d = await getDoc(doc(db, selectedCol, id));
+      setDocJson(JSON.stringify(d.data() || {}, null, 2));
+    } catch {
+      toast.error("Failed to fetch document");
+    }
+  };
 
-      // Group results by student
-      const groupedResults = {};
-
-      for (const res of allResults) {
-        const name = res.name?.trim();
-        const studentClass = res.class?.trim();
-
-        const matched = students.find(
-          (s) => s.name?.trim() === name && s.Class?.trim() === studentClass
-        );
-
-        if (!matched) {
-          console.warn("❌ No match for:", name, studentClass);
-          continue;
-        }
-
-        const batch = matched.batch?.trim() || "";
-        const docId = `${name.replace(/\s+/g, "_")}_${studentClass}_${batch}`;
-
-        if (!groupedResults[docId]) {
-          groupedResults[docId] = {
-            name,
-            class: studentClass,
-            batch,
-            results: [],
-          };
-        }
-
-        groupedResults[docId].results.push({
-          subject: res.subject,
-          marks: res.marks,
-          outOf: res.outOf,
-          remarks: res.remarks,
-          testDate: res.testDate,
-          addedAt: res.createdAt,
+  const handleSaveDoc = async () => {
+    try {
+      const parsed = JSON.parse(docJson);
+      if (!selectedDocId) {
+        const newRef = await addDoc(collection(db, selectedCol), parsed);
+        toast.success(`Created new doc ${newRef.id}`);
+        await refreshDocs();
+        setSelectedDocId(newRef.id);
+      } else {
+        await setDoc(doc(db, selectedCol, selectedDocId), parsed, {
+          merge: false,
         });
+        toast.success("Document saved");
+        await refreshDocs();
       }
-
-      // Write to ActualStudentResults
-      let synced = 0;
-      for (const docId in groupedResults) {
-        await setDoc(
-          doc(db, "ActualStudentResults", docId),
-          groupedResults[docId]
-        );
-        synced++;
-      }
-
-      toast.success(`✅ Synced ${synced} students' results.`, {
-        autoClose: 3000,
-      });
-      await logEvent(`Synced ${synced} students' results`);
-    } catch (err) {
-      console.error("❌ Error syncing results:", err);
-      toast.error("❌ Sync failed. Check console.", {
-        autoClose: 4000,
-      });
+    } catch (e) {
+      toast.error(`Invalid JSON or save failed: ${e.message}`);
     }
   };
 
-  const handleDeleteAll = async () => {
-    const confirm = window.confirm(
-      "⚠️ Are you sure you want to delete ALL records from ActualStudentResults?"
-    );
-    if (!confirm) return;
-
+  const handleDeleteDoc = async () => {
+    if (!selectedDocId) return toast.info("Select a document first");
+    if (!window.confirm(`Delete document ${selectedDocId}?`)) return;
     try {
-      const snapshot = await getDocs(collection(db, "ActualStudentResults"));
-      if (snapshot.empty) {
-        toast.info("ℹ️ No records to delete.", { autoClose: 2000 });
-        return;
-      }
-
-      let deleted = 0;
-      for (const docSnap of snapshot.docs) {
-        await deleteDoc(doc(db, "ActualStudentResults", docSnap.id));
-        deleted++;
-      }
-
-      toast.success(`🗑️ Deleted ${deleted} records successfully.`, {
-        autoClose: 3000,
-      });
-      await logEvent(`Deleted all ActualStudentResults (${deleted} records)`);
-    } catch (err) {
-      console.error("❌ Error deleting records:", err);
-      toast.error("❌ Failed to delete records.", { autoClose: 3000 });
+      await deleteDoc(doc(db, selectedCol, selectedDocId));
+      toast.success("Document deleted");
+      await refreshDocs();
+    } catch (e) {
+      toast.error(`Delete failed: ${e.message}`);
     }
   };
+
+  const performDeleteCollection = async () => {
+    try {
+      const snap = await getDocs(collection(db, selectedCol));
+      let count = 0;
+      for (const d of snap.docs) {
+        await deleteDoc(doc(db, selectedCol, d.id));
+        count++;
+      }
+      toast.success(`Deleted ${count} docs from ${selectedCol}`);
+      setShowDeleteConfirm(false);
+      setConfirmText("");
+      await refreshDocs();
+    } catch (e) {
+      toast.error(`Delete collection failed: ${e.message}`);
+    }
+  };
+
+  const handleDeleteCollection = async () => {
+    if (!selectedCol) return;
+    // First click reveals the safeguard panel
+    if (!showDeleteConfirm) {
+      setShowDeleteConfirm(true);
+      setConfirmText("");
+      return;
+    }
+    // Enforce typed confirmation (must match collection name exactly)
+    if (confirmText.trim() !== selectedCol) {
+      toast.error("Type the collection name exactly to confirm.");
+      return;
+    }
+    // Second confirmation dialog for extra safety
+    const ok = window.confirm(
+      `⚠️ Permanently delete ALL documents in '${selectedCol}'? This cannot be undone.`
+    );
+    if (!ok) return;
+    await performDeleteCollection();
+  };
+
+  // Lightweight connection guide (static mapping we know in this app)
+  const connections = useMemo(
+    () => ({
+      Users: [
+        "studentLeaves (name+Class → docId)",
+        "Results (name/class)",
+        "Complaints (name/class/batch)",
+        "HomeworkStatus (Name/Class)",
+        "ActualStudentResults (name/class/batch)",
+        "teacherLeaves (uid for teachers)",
+      ],
+      studentLeaves: ["Users (name/Class)"],
+      Results: ["ActualStudentResults (grouped by name/class/batch)"],
+      Complaints: ["Users (name/class/batch)"],
+      HomeworkStatus: ["Users (Name/Class/Batch)"],
+      SyllabusReport: ["syllabus (by class/batch/subject)"],
+    }),
+    []
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
-      <div className="max-w-xl mx-auto bg-white p-6 rounded-lg shadow space-y-4">
-        <h1 className="text-xl font-bold text-center">🛠️ Developer Console</h1>
-
-        <button
-          onClick={handleSyncResults}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded shadow transition-all"
-        >
-          🔄 Sync Actual Results
-        </button>
-
-        <button
-          onClick={handleDeleteAll}
-          className="w-full bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded shadow transition-all"
-        >
-          🗑️ Delete All Actual Results
-        </button>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            🎯 Filter by Batch
-          </label>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Sidebar */}
+        <div className="bg-white rounded-lg shadow p-4 space-y-3">
+          <h2 className="text-lg font-semibold">Developer Dashboard</h2>
           <select
-            value={selectedBatch}
-            onChange={(e) => setSelectedBatch(e.target.value)}
-            className="w-full border border-gray-300 rounded p-2"
+            className="w-full border rounded p-2"
+            value={selectedCol}
+            onChange={(e) => setSelectedCol(e.target.value)}
           >
-            <option value="">-- Select Batch --</option>
-            {batches.map(([batch, count]) => (
-              <option key={batch} value={batch}>
-                {batch || "[Empty Batch]"} ({count})
+            {collections.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
-        </div>
+          <button
+            onClick={refreshDocs}
+            className="w-full bg-indigo-600 text-white rounded p-2"
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Refresh"}
+          </button>
+          <button
+            onClick={handleDeleteCollection}
+            className="w-full bg-red-600 text-white rounded p-2"
+          >
+            {showDeleteConfirm ? "Confirm Delete" : "Delete Entire Collection"}
+          </button>
+          {showDeleteConfirm && (
+            <div className="border rounded p-2 space-y-2">
+              <p className="text-xs text-red-700">
+                Type the collection name{" "}
+                <span className="font-semibold">{selectedCol}</span> to confirm.
+              </p>
+              <input
+                className="w-full border rounded p-2 text-sm"
+                placeholder={selectedCol}
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 bg-gray-200 rounded p-2 text-sm"
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setConfirmText("");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={`flex-1 rounded p-2 text-sm ${
+                    confirmText.trim() === selectedCol
+                      ? "bg-red-600 text-white"
+                      : "bg-red-200 text-red-700 cursor-not-allowed"
+                  }`}
+                  disabled={confirmText.trim() !== selectedCol}
+                  onClick={handleDeleteCollection}
+                >
+                  Permanently Delete
+                </button>
+              </div>
+            </div>
+          )}
 
-        {batchStudents.length > 0 && (
-          <div className="bg-gray-100 rounded p-3 mt-3">
-            <h2 className="font-semibold mb-2">
-              👥 Students in {selectedBatch || "[Empty Batch]"}:
-            </h2>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              {batchStudents.map((student, i) => (
-                <li key={i}>
-                  {student.name} ({student.Class})
-                </li>
-              ))}
+          <div className="mt-4">
+            <h3 className="font-semibold text-sm mb-1">Connections</h3>
+            <ul className="text-xs list-disc pl-5 space-y-1">
+              {(connections[selectedCol] || ["No known connections"]).map(
+                (s, i) => (
+                  <li key={i}>{s}</li>
+                )
+              )}
             </ul>
           </div>
-        )}
+
+          <div className="mt-4">
+            <h3 className="font-semibold text-sm mb-1">
+              Features → Collections
+            </h3>
+            <ul className="text-xs list-disc pl-5 space-y-1">
+              <li>Attendance Dashboard → studentLeaves, Users</li>
+              <li>Results → Results, ActualStudentResults</li>
+              <li>Complaints → Complaints, Users</li>
+              <li>Homework → HomeworkStatus, Users</li>
+              <li>Syllabus Manager → syllabus, SyllabusReport</li>
+              <li>Feedbacks → Feedbacks</li>
+              <li>Time Table → TimeTable</li>
+              <li>Teacher Leaves → teacherLeaves</li>
+              <li>Leaderboards → ActualStudentResults</li>
+              <li>Logs → Logs</li>
+              <li>Tests → PastTests, UpcomingTests</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Documents list */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="font-semibold mb-2">Documents</h3>
+          <div className="max-h-[60vh] overflow-auto border rounded">
+            {docsList.length === 0 ? (
+              <div className="p-3 text-sm text-gray-500">No documents</div>
+            ) : (
+              <ul>
+                {docsList.map((d) => (
+                  <li
+                    key={d.id}
+                    className={`px-3 py-2 border-b hover:bg-gray-50 cursor-pointer ${
+                      selectedDocId === d.id ? "bg-gray-100" : ""
+                    }`}
+                    onClick={() => handlePickDoc(d.id)}
+                  >
+                    <div className="text-sm font-mono">{d.id}</div>
+                    <div className="text-xs text-gray-500 truncate">
+                      {JSON.stringify(d.data)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => {
+                setSelectedDocId("");
+                setDocJson('{\n  "example": "value"\n}');
+              }}
+              className="bg-green-600 text-white rounded px-3 py-2"
+            >
+              New Document
+            </button>
+            <button
+              onClick={handleDeleteDoc}
+              className="bg-red-600 text-white rounded px-3 py-2"
+            >
+              Delete Selected
+            </button>
+          </div>
+        </div>
+
+        {/* JSON Editor */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="font-semibold mb-2">
+            Editor {selectedDocId && `(id: ${selectedDocId})`}
+          </h3>
+          <textarea
+            className="w-full h-[60vh] border rounded font-mono text-sm p-2"
+            value={docJson}
+            onChange={(e) => setDocJson(e.target.value)}
+          />
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={handleSaveDoc}
+              className="bg-indigo-600 text-white rounded px-4 py-2"
+            >
+              Save
+            </button>
+          </div>
+        </div>
       </div>
       <ToastContainer position="bottom-right" />
     </div>

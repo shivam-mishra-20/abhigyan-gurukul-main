@@ -20,6 +20,7 @@ import {
   FaRegFileAlt,
   FaPlusCircle,
   FaCheckCircle,
+  FaGraduationCap,
 } from "react-icons/fa";
 
 // Custom hook for responsive design
@@ -177,6 +178,14 @@ const DashboardHome = ({ name }) => {
       route: "/student-dashboard/extra-class-request",
       highlight: true,
     },
+    {
+      icon: <FaGraduationCap className="text-3xl" />,
+      title: "Admission Inquiries",
+      description: "Manage admission forms and inquiries",
+      bg: "bg-gradient-to-br from-pink-50 to-pink-100 text-pink-800",
+      route: "/student-dashboard/admission-inquiries",
+      highlight: true,
+    },
   ];
 
   const teacherCards = [
@@ -244,6 +253,14 @@ const DashboardHome = ({ name }) => {
       description: "See all extra class requests",
       bg: "bg-gradient-to-br from-blue-50 to-blue-100 text-blue-800",
       route: "/student-dashboard/extra-class-request",
+      highlight: true,
+    },
+    {
+      icon: <FaGraduationCap className="text-3xl" />,
+      title: "Admission Inquiries",
+      description: "View and manage admission inquiries",
+      bg: "bg-gradient-to-br from-pink-50 to-pink-100 text-pink-800",
+      route: "/student-dashboard/admission-inquiries",
       highlight: true,
     },
   ];

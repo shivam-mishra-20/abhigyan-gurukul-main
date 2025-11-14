@@ -6,6 +6,8 @@ import {
   doc,
   setDoc,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import jsPDF from "jspdf";
@@ -13,7 +15,6 @@ import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { useNavigate } from "react-router";
 import bcrypt from "bcryptjs";
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { logEvent } from "../utils/logEvent";
 
@@ -50,7 +51,7 @@ const AdminUserManagement = () => {
         users.sort((a, b) => a.name.localeCompare(b.name));
         setAllUsers(users);
         setFilteredUsers(users);
-      } catch (error) {
+      } catch {
         showFeedback("Failed to load users", "error");
       } finally {
         setIsLoading(false);
@@ -109,12 +110,119 @@ const AdminUserManagement = () => {
   const handleDelete = async (user) => {
     if (!window.confirm(`Delete ${user.name}?`)) return;
     try {
-      await deleteDoc(doc(db, "Users", user.id));
+      await cascadeDeleteUser(user);
       setAllUsers((prev) => prev.filter((u) => u.id !== user.id));
-      showFeedback(`${user.name} deleted successfully`);
-      await logEvent(`User deleted: ${user.name} (${user.role})`);
-    } catch (error) {
+      showFeedback(`${user.name} and related data deleted successfully`);
+      await logEvent(`Cascade delete: ${user.name} (${user.role})`);
+    } catch {
       showFeedback("Failed to delete user", "error");
+    }
+  };
+
+  // Helper to construct doc ids used across collections
+  const toAttendanceDocId = (name, Class) =>
+    `${String(name).replace(/\s+/g, "").toLowerCase()}_${String(Class)
+      .replace(/\s+/g, "")
+      .toLowerCase()}`;
+  const toComplaintsDocId = (name, Class, batch) =>
+    `${String(name).replace(/\s+/g, "_")}_${String(Class).replace(
+      /\s+/g,
+      "_"
+    )}_${String(batch || "").replace(/\s+/g, "_")}`;
+  const toActualResultsDocId = (name, Class, batch) =>
+    `${String(name).replace(/\s+/g, "_")}_${String(Class)}_${String(
+      batch || ""
+    )}`;
+
+  // Cascade delete: remove Users doc and related data in other collections
+  const cascadeDeleteUser = async (user) => {
+    const name = user.name || "";
+    const Class = user.Class || user.class || "";
+    const batch = user.batch || user.Batch || "";
+    const role = (user.role || "").toLowerCase();
+    const uid = user.uid || user.id;
+
+    // 1) Delete attendance in studentLeaves (single doc per student)
+    try {
+      if (name && Class) {
+        const attId = toAttendanceDocId(name, Class);
+        await deleteDoc(doc(db, "studentLeaves", attId));
+      }
+    } catch (e) {
+      console.warn("cascade: studentLeaves delete failed", e);
+    }
+
+    // 2) Delete complaints doc for the student
+    try {
+      if (name && Class) {
+        const compId = toComplaintsDocId(name, Class, batch);
+        await deleteDoc(doc(db, "Complaints", compId));
+      }
+    } catch (e) {
+      console.warn("cascade: Complaints delete failed", e);
+    }
+
+    // 3) Delete homework status docs for this student
+    try {
+      if (name) {
+        const snap = await getDocs(
+          query(collection(db, "HomeworkStatus"), where("Name", "==", name))
+        );
+        const deletes = snap.docs
+          .filter((d) => {
+            const data = d.data() || {};
+            return !Class || data.Class === Class;
+          })
+          .map((d) => deleteDoc(doc(db, "HomeworkStatus", d.id)));
+        await Promise.all(deletes);
+      }
+    } catch (e) {
+      console.warn("cascade: HomeworkStatus delete failed", e);
+    }
+
+    // 4) Delete Results documents for this student
+    try {
+      if (name) {
+        const rs = await getDocs(
+          query(collection(db, "Results"), where("name", "==", name))
+        );
+        const dels = rs.docs
+          .filter((d) => {
+            const data = d.data() || {};
+            return !Class || data.class === Class;
+          })
+          .map((d) => deleteDoc(doc(db, "Results", d.id)));
+        await Promise.all(dels);
+      }
+    } catch (e) {
+      console.warn("cascade: Results delete failed", e);
+    }
+
+    // 5) Delete ActualStudentResults aggregate doc
+    try {
+      if (name && Class) {
+        const aggId = toActualResultsDocId(name, Class, batch);
+        await deleteDoc(doc(db, "ActualStudentResults", aggId));
+      }
+    } catch (e) {
+      console.warn("cascade: ActualStudentResults delete failed", e);
+    }
+
+    // 6) For teachers: delete teacherLeaves doc
+    try {
+      if (role === "teacher") {
+        await deleteDoc(doc(db, "teacherLeaves", String(uid)));
+      }
+    } catch (e) {
+      console.warn("cascade: teacherLeaves delete failed", e);
+    }
+
+    // 7) Finally delete the Users document
+    try {
+      await deleteDoc(doc(db, "Users", user.id));
+    } catch (e) {
+      console.warn("cascade: Users delete failed", e);
+      throw e; // bubble up if user doc fails
     }
   };
 
@@ -164,7 +272,7 @@ const AdminUserManagement = () => {
       );
       showFeedback("Role updated successfully");
       await logEvent(`User role changed: ${userId} to ${newRole}`);
-    } catch (error) {
+    } catch {
       showFeedback("Failed to update role", "error");
     }
   };
@@ -211,7 +319,7 @@ const AdminUserManagement = () => {
       const hash = bcrypt.hashSync(pw, salt);
       await updateDoc(doc(db, "Users", userId), { password: hash });
       showFeedback("Password updated successfully");
-    } catch (error) {
+    } catch {
       showFeedback("Failed to update password", "error");
     }
   };
