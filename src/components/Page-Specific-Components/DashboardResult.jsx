@@ -23,6 +23,10 @@ import {
   FaUserGraduate,
   FaGraduationCap,
 } from "react-icons/fa";
+import {
+  syncSingleStudentResults,
+  syncStudentResults,
+} from "../../utils/syncResults";
 
 const batchOptions = ["Lakshya", "Aadharshila", "Basic", "Commerce"];
 const getFilteredBatches = (cls) => {
@@ -86,6 +90,10 @@ export default function DashboardResult() {
   // New batch state
   const [batches, setBatches] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState("");
+
+  // Sync state
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
 
   // Animation variants
   const containerVariants = {
@@ -177,6 +185,7 @@ export default function DashboardResult() {
       await addDoc(collection(db, "Results"), {
         class: selectedClass,
         name: selectedStudentName,
+        batch: selectedBatch || "",
         subject,
         marks,
         outOf,
@@ -184,6 +193,13 @@ export default function DashboardResult() {
         testDate,
         createdAt: new Date().toISOString(),
       });
+
+      // Sync to ActualStudentResults for leaderboard
+      await syncSingleStudentResults(
+        selectedStudentName,
+        selectedClass,
+        selectedBatch
+      );
 
       setConfirmation("✅ Result submitted successfully!");
       // Only clear fields that are unique per result
@@ -328,6 +344,16 @@ export default function DashboardResult() {
       dataToUpdate.outOf = Number(dataToUpdate.outOf);
 
       await updateDoc(doc(db, "Results", docId), dataToUpdate);
+
+      // Sync to ActualStudentResults after update
+      if (dataToUpdate.name && dataToUpdate.class) {
+        await syncSingleStudentResults(
+          dataToUpdate.name,
+          dataToUpdate.class,
+          dataToUpdate.batch
+        );
+      }
+
       setEditIdx(null);
       setEditData({});
       handleViewResults();
@@ -339,7 +365,20 @@ export default function DashboardResult() {
   const handleDelete = async (docId) => {
     if (!window.confirm("Are you sure you want to delete this result?")) return;
     try {
+      // Get the result data before deleting
+      const resultToDelete = viewedResults.find((r) => r.id === docId);
+
       await deleteDoc(doc(db, "Results", docId));
+
+      // Sync to ActualStudentResults after delete
+      if (resultToDelete && resultToDelete.name && resultToDelete.class) {
+        await syncSingleStudentResults(
+          resultToDelete.name,
+          resultToDelete.class,
+          resultToDelete.batch
+        );
+      }
+
       // Refresh results
       if (role === "student") {
         fetchResult();
@@ -448,10 +487,14 @@ export default function DashboardResult() {
     }
     setIsSubmitting(true);
     try {
+      // Keep track of unique students for syncing
+      const studentsToSync = new Set();
+
       for (const r of validResults) {
         await addDoc(collection(db, "Results"), {
           class: selectedClass,
           name: r.name,
+          batch: selectedBatch || "",
           subject,
           marks: r.marks,
           outOf: r.outOf,
@@ -459,7 +502,15 @@ export default function DashboardResult() {
           testDate: bulkTestDate,
           createdAt: new Date().toISOString(),
         });
+        studentsToSync.add(`${r.name}_${selectedClass}_${selectedBatch}`);
       }
+
+      // Sync all students to ActualStudentResults
+      for (const studentKey of studentsToSync) {
+        const [name, cls, batch] = studentKey.split("_");
+        await syncSingleStudentResults(name, cls, batch || "");
+      }
+
       setConfirmation("✅ All results submitted!");
       setBulkResults((prev) =>
         prev.map((r) => ({ ...r, marks: "", remarks: "" }))
@@ -472,6 +523,34 @@ export default function DashboardResult() {
     }
   };
 
+  // Handle manual sync of all results
+  const handleSyncAllResults = async () => {
+    if (
+      !window.confirm(
+        "This will synchronize all student results to the leaderboard. Continue?"
+      )
+    ) {
+      return;
+    }
+
+    setIsSyncing(true);
+    setSyncMessage("");
+
+    try {
+      const result = await syncStudentResults();
+      if (result.success) {
+        setSyncMessage(`✅ ${result.message}`);
+      } else {
+        setSyncMessage(`❌ ${result.message}`);
+      }
+    } catch (error) {
+      setSyncMessage(`❌ Failed to sync: ${error.message}`);
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncMessage(""), 5000);
+    }
+  };
+
   return (
     <motion.div
       className="bg-white p-4 md:p-6 rounded-xl shadow-md max-w-3xl mx-auto border border-gray-100"
@@ -479,17 +558,68 @@ export default function DashboardResult() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.h2
-        className="text-2xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <FaClipboardList className="mr-2 text-green-600" />
-        {role === "student"
-          ? "Your Academic Results"
-          : "Manage Student Results"}
-      </motion.h2>
+      <div className="flex items-center justify-between mb-6">
+        <motion.h2
+          className="text-2xl font-bold text-gray-800 flex items-center"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <FaClipboardList className="mr-2 text-green-600" />
+          {role === "student"
+            ? "Your Academic Results"
+            : "Manage Student Results"}
+        </motion.h2>
+
+        {/* Sync button for admin/teacher */}
+        {(role === "admin" || role === "teacher") && (
+          <motion.button
+            onClick={handleSyncAllResults}
+            disabled={isSyncing}
+            className={`${
+              isSyncing
+                ? "bg-gray-400 cursor-wait"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white px-4 py-2 rounded-lg shadow-sm text-sm font-medium transition-all flex items-center gap-2`}
+            whileHover={{ scale: isSyncing ? 1 : 1.05 }}
+            whileTap={{ scale: isSyncing ? 1 : 0.95 }}
+          >
+            {isSyncing ? (
+              <>
+                <motion.div
+                  className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+                <span>Syncing...</span>
+              </>
+            ) : (
+              <>
+                <FaStar className="text-yellow-300" />
+                <span>Sync Leaderboard</span>
+              </>
+            )}
+          </motion.button>
+        )}
+      </div>
+
+      {/* Sync message */}
+      <AnimatePresence>
+        {syncMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`mb-4 p-3 rounded-lg text-center font-medium ${
+              syncMessage.includes("❌")
+                ? "bg-red-50 text-red-700 border border-red-200"
+                : "bg-green-50 text-green-700 border border-green-200"
+            }`}
+          >
+            {syncMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Teacher/Admin Add Result */}
       {(role === "teacher" || role === "admin") && (

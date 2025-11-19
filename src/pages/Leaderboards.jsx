@@ -78,31 +78,52 @@ const Leaderboard = () => {
         }
 
         // NEW SECTION: Subject-wise rankings
+        // Group results by subject for this student
+        const subjectAggregates = {};
         results.forEach((r) => {
           if (r.subject) {
-            // Initialize structure if needed
-            if (!subjectMap[data.class]) subjectMap[data.class] = {};
-            if (!subjectMap[data.class][data.batch])
-              subjectMap[data.class][data.batch] = {};
-            if (!subjectMap[data.class][data.batch][r.subject])
-              subjectMap[data.class][data.batch][r.subject] = [];
-
-            // Add student's performance in this subject
-            const subjectPercentage =
-              parseFloat(r.outOf) > 0
-                ? (parseFloat(r.marks) / parseFloat(r.outOf)) * 100
-                : 0;
-
-            subjectMap[data.class][data.batch][r.subject].push({
-              name: data.name,
-              class: data.class,
-              batch: data.batch,
-              marks: parseFloat(r.marks || "0"),
-              outOf: parseFloat(r.outOf || "0"),
-              percentage: subjectPercentage.toFixed(2),
-              subject: r.subject,
-            });
+            if (!subjectAggregates[r.subject]) {
+              subjectAggregates[r.subject] = {
+                totalMarks: 0,
+                totalOutOf: 0,
+                count: 0,
+              };
+            }
+            subjectAggregates[r.subject].totalMarks += parseFloat(
+              r.marks || "0"
+            );
+            subjectAggregates[r.subject].totalOutOf += parseFloat(
+              r.outOf || "0"
+            );
+            subjectAggregates[r.subject].count += 1;
           }
+        });
+
+        // Add aggregated subject performance to subject map
+        Object.keys(subjectAggregates).forEach((subject) => {
+          const agg = subjectAggregates[subject];
+
+          // Initialize structure if needed
+          if (!subjectMap[data.class]) subjectMap[data.class] = {};
+          if (!subjectMap[data.class][data.batch])
+            subjectMap[data.class][data.batch] = {};
+          if (!subjectMap[data.class][data.batch][subject])
+            subjectMap[data.class][data.batch][subject] = [];
+
+          // Calculate overall percentage for this subject across all tests
+          const subjectPercentage =
+            agg.totalOutOf > 0 ? (agg.totalMarks / agg.totalOutOf) * 100 : 0;
+
+          subjectMap[data.class][data.batch][subject].push({
+            name: data.name,
+            class: data.class,
+            batch: data.batch,
+            marks: agg.totalMarks,
+            outOf: agg.totalOutOf,
+            percentage: subjectPercentage.toFixed(2),
+            subject: subject,
+            testCount: agg.count,
+          });
         });
       });
 
