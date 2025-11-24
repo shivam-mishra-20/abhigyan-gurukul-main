@@ -38,6 +38,7 @@ import Admissions from "./pages/Admissions";
 import Courses from "./pages/Courses";
 import Events from "./pages/Events";
 import TestManagement from "./pages/TestManagement";
+import MarketingHub from "./pages/MarketingHub";
 
 // TrackingWrapper component to handle visit tracking on route changes
 const TrackingWrapper = ({ children }) => {
@@ -51,61 +52,76 @@ const TrackingWrapper = ({ children }) => {
   return <>{children}</>;
 };
 
-function App() {
+const AppContent = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const location = useLocation();
+  const isMarketingHub = location.pathname === "/marketing-hub";
 
+  return (
+    <>
+      {!isMarketingHub && <Navbar />}
+      <Routes>
+        {/* Render "MobileHome" instead of "Home" on mobile */}
+        <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
+
+        <Route path="/about" element={<About />} />
+        <Route path="/faculties" element={<Faculties />} />
+        <Route path="/enrollnow" element={<EnrollNow />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/adminlogin" element={<Login />} />
+        {/* <Route path="/verysecretregister" element={<StudentRegister />} /> */}
+        <Route path="/login" element={<StudentLogin />} />
+
+        {/* New Routes */}
+        <Route path="/admissions" element={<Admissions />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/marketing-hub" element={<MarketingHub />} />
+
+        {/* Protected student route */}
+        <Route
+          path="/student-dashboard/*"
+          element={
+            <ProtectedStudentRoute roles={["student", "teacher", "admin"]}>
+              <Routes>
+                <Route path="/" element={<StudentDashboard />} />
+                {/* Add Traffic dashboard as a nested route within student-dashboard */}
+                <Route
+                  path="/student-dashboard/test-management"
+                  element={
+                    ["admin", "teacher"].includes(
+                      localStorage.getItem("userRole")
+                    ) ? (
+                      <TestManagement />
+                    ) : (
+                      <Navigate to="/student-dashboard" />
+                    )
+                  }
+                />
+
+                {/* Add other nested routes if needed */}
+                <Route path="*" element={<StudentDashboard />} />
+              </Routes>
+            </ProtectedStudentRoute>
+          }
+        />
+      </Routes>
+      {!isMarketingHub && (
+        <>
+          <hr className="mt-30 mb-30 border-t-1 border-black opacity-[18%] my-4" />
+          <Footer />
+          <FloatingLeaderboardButton />
+        </>
+      )}
+    </>
+  );
+};
+
+function App() {
   return (
     <Router>
       <TrackingWrapper>
-        <Navbar />
-        <Routes>
-          {/* Render "MobileHome" instead of "Home" on mobile */}
-          <Route path="/" element={isMobile ? <MobileHome /> : <Home />} />
-
-          <Route path="/about" element={<About />} />
-          <Route path="/faculties" element={<Faculties />} />
-          <Route path="/enrollnow" element={<EnrollNow />} />
-          <Route path="/dashboard" element={<AdminDashboard />} />
-          <Route path="/adminlogin" element={<Login />} />
-          {/* <Route path="/verysecretregister" element={<StudentRegister />} /> */}
-          <Route path="/login" element={<StudentLogin />} />
-
-          {/* New Routes */}
-          <Route path="/admissions" element={<Admissions />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/events" element={<Events />} />
-
-          {/* Protected student route */}
-          <Route
-            path="/student-dashboard/*"
-            element={
-              <ProtectedStudentRoute roles={["student", "teacher", "admin"]}>
-                <Routes>
-                  <Route path="/" element={<StudentDashboard />} />
-                  {/* Add Traffic dashboard as a nested route within student-dashboard */}
-                  <Route
-                    path="/student-dashboard/test-management"
-                    element={
-                      ["admin", "teacher"].includes(
-                        localStorage.getItem("userRole")
-                      ) ? (
-                        <TestManagement />
-                      ) : (
-                        <Navigate to="/student-dashboard" />
-                      )
-                    }
-                  />
-
-                  {/* Add other nested routes if needed */}
-                  <Route path="*" element={<StudentDashboard />} />
-                </Routes>
-              </ProtectedStudentRoute>
-            }
-          />
-        </Routes>
-        <hr className="mt-30 mb-30 border-t-1 border-black opacity-[18%] my-4" />
-        <Footer />
-        <FloatingLeaderboardButton />
+        <AppContent />
       </TrackingWrapper>
     </Router>
   );

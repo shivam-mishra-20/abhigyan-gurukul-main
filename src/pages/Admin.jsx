@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { db } from "../firebaseConfig";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { logEvent } from "../utils/logEvent";
 
 const AdminDashboard = () => {
@@ -89,7 +89,6 @@ const AdminDashboard = () => {
         {user && (
           <p className="text-lg text-center mt-2">Welcome, {user.email}</p>
         )}
-
         {/* Contact Submissions */}
         <div className="mt-6">
           <h3 className="text-xl font-semibold text-purple-600 mb-3">

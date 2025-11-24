@@ -38,16 +38,16 @@ const HeroSection = () => {
       text: "Admissions",
       path: "/admissions",
     },
-    // {
-    //   icon: <FaChalkboardTeacher className="text-lg" />,
-    //   text: "Courses",
-    //   path: "/courses",
-    // },
-    // {
-    //   icon: <FaCalendarAlt className="text-lg" />,
-    //   text: "Events",
-    //   path: "/events",
-    // },
+    {
+      icon: <FaChalkboardTeacher className="text-lg" />,
+      text: "Courses",
+      path: "/courses",
+    },
+    {
+      icon: <FaCalendarAlt className="text-lg" />,
+      text: "Events",
+      path: "/events",
+    },
   ];
 
   return (
@@ -151,7 +151,7 @@ const HeroSection = () => {
         {/* Image/Illustration */}
         <motion.div variants={fadeIn} className="relative flex justify-center">
           <img
-            src="/Ab-Banner-02.jpg"
+            src="/Ab-Banner.jpg"
             alt="Students at Abhigyan Gurukul"
             className="rounded-lg shadow-2xl max-w-full object-cover h-[400px]"
           />

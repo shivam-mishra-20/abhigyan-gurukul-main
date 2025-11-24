@@ -171,17 +171,50 @@ const DevConsole = () => {
         {/* Sidebar */}
         <div className="bg-white rounded-lg shadow p-4 space-y-3">
           <h2 className="text-lg font-semibold">Developer Dashboard</h2>
-          <select
-            className="w-full border rounded p-2"
-            value={selectedCol}
-            onChange={(e) => setSelectedCol(e.target.value)}
-          >
-            {collections.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+
+          {/* Local Storage Controls */}
+          <div className="border-t pt-3 space-y-2">
+            <h3 className="text-sm font-semibold text-gray-700">
+              Local Storage
+            </h3>
+            <button
+              onClick={() => {
+                localStorage.removeItem("hasSeenScholarshipPopup");
+                toast.success(
+                  "Scholarship popup reset! Refresh page to see it again."
+                );
+              }}
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white rounded p-2 text-sm"
+            >
+              Reset Scholarship Popup
+            </button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                toast.success("All local storage cleared!");
+              }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded p-2 text-sm"
+            >
+              Clear All Local Storage
+            </button>
+          </div>
+
+          <div className="border-t pt-3">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+              Firestore Collections
+            </h3>
+            <select
+              className="w-full border rounded p-2"
+              value={selectedCol}
+              onChange={(e) => setSelectedCol(e.target.value)}
+            >
+              {collections.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             onClick={refreshDocs}
             className="w-full bg-indigo-600 text-white rounded p-2"

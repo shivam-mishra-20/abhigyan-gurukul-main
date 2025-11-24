@@ -23,6 +23,8 @@ import StudeentCarousel from "../components/StudentCarousel";
 import EventCarousel from "../components/EventCarousel";
 import ChatButton from "../components/ChatButton";
 import FeedbackButton from "../components/FeedbackButton";
+import ScholarshipPopup from "../components/ScholarshipPopup";
+import ScholarshipBanner from "../components/ScholarshipBanner";
 
 const MobileHome = () => {
   // Image paths
@@ -83,7 +85,9 @@ const MobileHome = () => {
 
   return (
     <>
-      <StudeentCarousel />
+      {/* Scholarship Popup - Shows on first visit */}
+      <ScholarshipPopup />
+
       {/* Enhanced Hero Section - Mobile Version */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -232,6 +236,8 @@ const MobileHome = () => {
           </motion.div>
         </div>
       </motion.div>
+      {/* Scholarship Banner - Always visible */}
+      <ScholarshipBanner />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

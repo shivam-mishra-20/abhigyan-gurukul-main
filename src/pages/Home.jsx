@@ -27,6 +27,8 @@ import HomePageMainCarousel from "../components/Page-Specific-Components/HomePag
 import MiniLeaderboardCard from "../components/MiniLeaderboardCard";
 import StudentCarousel from "../components/StudentCarousel";
 import FeedbackButton from "../components/FeedbackButton";
+import ScholarshipPopup from "../components/ScholarshipPopup";
+import ScholarshipBanner from "../components/ScholarshipBanner";
 //       </h3>
 
 const Home = () => {
@@ -72,16 +74,15 @@ const Home = () => {
 
   return (
     <>
+      {/* Scholarship Popup - Shows on first visit */}
+      <ScholarshipPopup />
+
       {/*Hero Section with 3D elements */}
       <HeroSection />
-      {/* Animated Banner */}
-      {/* <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <Banner />
-      </motion.div> */}
+
+      {/* Scholarship Banner - Always visible */}
+      <ScholarshipBanner />
+
       {/* Introduction Section with Animation */}
       <motion.section
         ref={ref}
@@ -106,8 +107,6 @@ const Home = () => {
           {text1}
         </motion.div>
       </motion.section>
-      {/* Main Carousel */}
-      <StudentCarousel />
 
       {/* Faculty Spotlight with improved design */}
       <FacultySpotlight />
