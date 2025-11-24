@@ -79,7 +79,7 @@ const ScholarshipPopup = () => {
             </button>
 
             {/* Header with Gradient Background */}
-            <div className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white p-6 md:p-8 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white p-4 sm:p-6 md:p-8 relative overflow-hidden">
               {/* Decorative Elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-24 -translate-x-24"></div>
@@ -99,7 +99,7 @@ const ScholarshipPopup = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-3xl md:text-4xl font-bold mb-3"
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3"
                 >
                   Scholarship Test cum Admission 2026-27
                 </motion.h2>
@@ -108,7 +108,7 @@ const ScholarshipPopup = () => {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.35 }}
-                  className="inline-block bg-yellow-400 text-green-800 px-4 py-2 rounded-xl text-base md:text-lg font-bold mb-3 shadow-lg"
+                  className="inline-block bg-yellow-400 text-green-800 px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base md:text-lg font-bold mb-3 shadow-lg"
                 >
                   💰 Scholarship Pool: ₹50 Lakhs
                 </motion.div>
@@ -117,9 +117,9 @@ const ScholarshipPopup = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="text-white/90 text-lg mb-2"
+                  className="text-white/90 text-base sm:text-lg mb-2"
                 >
-                  Distributed Based on Early-Bird & Performance Merit
+                  Additional OFF Based on Early-Bird & Performance Merit
                 </motion.p>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
@@ -145,30 +145,39 @@ const ScholarshipPopup = () => {
                   <FaCalendarAlt className="text-green-600 mr-3 text-2xl" />
                   Test Dates & Early Bird Scholarships
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3">
                   {[
                     {
                       date: "7th December",
-                      discount: "10%+ Performance",
+                      discount: "10%",
+                      label: "additional OFF",
                       highlight: true,
                     },
                     {
                       date: "14th December",
-                      discount: "9%+ Performance",
+                      discount: "9%",
+                      label: "additional OFF",
                     },
                     {
                       date: "21st December",
-                      discount: "8%+ Performance",
+                      discount: "8%",
+                      label: "additional OFF",
                     },
                     {
                       date: "28th December",
-                      discount: "7%+ Performance",
+                      discount: "7%",
+                      label: "additional OFF",
                       special: "Current Students",
                     },
-                    { date: "4th January", discount: "6%+ Performance" },
+                    {
+                      date: "4th January",
+                      discount: "6%",
+                      label: "additional OFF",
+                    },
                     {
                       date: "11th January",
-                      discount: "5%+ Performance",
+                      discount: "5%",
+                      label: "additional OFF",
                     },
                   ].map((item, idx) => (
                     <motion.div
@@ -177,37 +186,37 @@ const ScholarshipPopup = () => {
                         item.highlight
                           ? "from-yellow-50 to-orange-50 border-yellow-400 border-4"
                           : "from-green-50 to-emerald-50 border-green-200 border-2"
-                      } p-4 rounded-2xl hover:shadow-xl transition-all`}
+                      } p-3 sm:p-4 rounded-2xl hover:shadow-xl transition-all`}
                       whileHover={{ y: -5, scale: 1.02 }}
                     >
                       {item.highlight && (
-                        <div className="inline-block bg-yellow-400 text-green-800 px-2 py-1 rounded-full text-[10px] font-bold mb-2">
+                        <div className="inline-block bg-yellow-400 text-green-800 px-2 py-1 rounded-full text-[9px] sm:text-[10px] font-bold mb-2">
                           ⭐ BEST OFFER
                         </div>
                       )}
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <FaCalendarAlt className="text-green-600 text-xl mb-1" />
-                          <h4 className="font-bold text-gray-800 text-sm">
+                      <div className="mb-2">
+                        <div className="flex items-center mb-2">
+                          <FaCalendarAlt className="text-green-600 text-lg sm:text-xl mr-2" />
+                          <h4 className="font-bold text-gray-800 text-xs sm:text-sm">
                             {item.date}
                           </h4>
-                          {item.special && (
-                            <p className="text-[10px] text-blue-600 font-semibold mt-1">
-                              {item.special}
-                            </p>
-                          )}
                         </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-green-600">
+                        {item.special && (
+                          <p className="text-[9px] sm:text-[10px] text-blue-600 font-semibold mb-2">
+                            {item.special}
+                          </p>
+                        )}
+                        <div className="text-center bg-white/50 rounded-lg p-2 mb-2">
+                          <p className="text-2xl sm:text-3xl font-bold text-green-600">
                             {item.discount}
                           </p>
-                          <p className="text-[10px] text-gray-600">
-                            Early Bird
+                          <p className="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                            {item.label}
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white/50 rounded-lg p-2 mt-2">
-                        <p className="text-[11px] text-gray-700 flex items-center justify-center">
+                      <div className="bg-white/70 rounded-lg p-2">
+                        <p className="text-[10px] sm:text-[11px] text-gray-700 flex items-center justify-center">
                           <FaCheckCircle className="text-green-500 mr-1 text-xs" />
                           10:00 AM - 1:00 PM
                         </p>
@@ -331,7 +340,7 @@ const ScholarshipPopup = () => {
                         Early Bird Scholarships
                       </p>
                       <p className="text-sm text-gray-600">
-                        5% to 10% discount on tuition fees
+                        5% to 10% additional OFF on tuition fees
                       </p>
                     </div>
                   </div>
@@ -342,7 +351,7 @@ const ScholarshipPopup = () => {
                         Performance-Based Scholarship
                       </p>
                       <p className="text-sm text-gray-600">
-                        Variable - based on test results
+                        Additional OFF based on test results
                       </p>
                     </div>
                   </div>

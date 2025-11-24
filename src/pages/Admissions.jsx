@@ -313,8 +313,8 @@ const Admissions = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            For Grades 6th to 12th | Multiple Test Dates | Up to 10% Early Bird
-            + Additional Performance Bonus
+            For Grades 6th to 12th | Multiple Test Dates | Flat 10% Early Bird +
+            Additional Performance Bonus (upto 0-30%)
           </motion.p>
           <motion.div
             className="flex flex-wrap gap-4"
@@ -439,9 +439,9 @@ const Admissions = () => {
               Additional Performance-Based Scholarship
             </h4>
             <p className="text-gray-700">
-              Beyond the early bird discount, you&apos;ll receive variable
-              scholarship based on your test performance. Top performers can
-              receive significant additional benefits!
+              Beyond the early bird discount, you&apos;ll receive additional OFF
+              based on your test performance. Top performers can receive
+              significant additional benefits!
             </p>
           </motion.div>
         </div>
@@ -506,37 +506,38 @@ const Admissions = () => {
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>7th Dec:</strong> 10% Early Bird Discount
+                    <strong>7th Dec:</strong> 10% additional OFF
                   </span>
                 </li>
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>14th Dec:</strong> 9% Early Bird Discount
+                    <strong>14th Dec:</strong> 9% additional OFF
                   </span>
                 </li>
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>21st Dec:</strong> 8% Early Bird Discount
+                    <strong>21st Dec:</strong> 8% additional OFF
                   </span>
                 </li>
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-blue-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>28th Dec:</strong> 7% (Current Students)
+                    <strong>28th Dec:</strong> 7% additional OFF (Current
+                    Students)
                   </span>
                 </li>
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>4th Jan:</strong> 6% Early Bird Discount
+                    <strong>4th Jan:</strong> 6% additional OFF
                   </span>
                 </li>
                 <li className="flex items-center text-gray-700">
                   <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
                   <span>
-                    <strong>11th Jan:</strong> 5% Early Bird Discount
+                    <strong>11th Jan:</strong> 5% additional OFF
                   </span>
                 </li>
               </ul>
@@ -829,13 +830,12 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Integers</li>
-                    <li>• Fractions and Decimals</li>
-                    <li>• Data Handling</li>
-                    <li>• Simple Equations</li>
-                    <li>• Lines and Angles</li>
-                    <li>• Triangles</li>
-                    <li>• Perimeter and Area</li>
+                    <li>• Exponents and powers</li>
+                    <li>• Algebric expressions</li>
+                    <li>• Triangle and its properties</li>
+                    <li>• Perimeter and area</li>
+                    <li>• Rational numbers</li>
+                    <li>• Comparing quantities</li>
                   </ul>
                 </div>
 
@@ -846,11 +846,12 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Nutrition in Plants</li>
-                    <li>• Heat</li>
-                    <li>• Acids, Bases and Salts</li>
-                    <li>• Physical and Chemical Changes</li>
-                    <li>• Weather, Climate</li>
+                    <li>• Light</li>
+                    <li>• Acid, base & salts</li>
+                    <li>• Motion and time</li>
+                    <li>• Physical & chemical changes</li>
+                    <li>• Transportation in plants & animals</li>
+                    <li>• Electric current and its effects</li>
                   </ul>
                 </div>
               </div>
@@ -876,12 +877,12 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Rational Numbers</li>
-                    <li>• Linear Equations in One Variable</li>
-                    <li>• Quadrilaterals</li>
-                    <li>• Data Handling</li>
-                    <li>• Squares and Square Roots</li>
-                    <li>• Cubes and Cube Roots</li>
+                    <li>• Factorisation</li>
+                    <li>• Algebraic expressions</li>
+                    <li>• Mensuration</li>
+                    <li>• Exponents and power</li>
+                    <li>• Understanding quadrilaterals</li>
+                    <li>• Linear equations</li>
                   </ul>
                 </div>
 
@@ -892,11 +893,13 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Crop Production and Management</li>
-                    <li>• Microorganisms</li>
-                    <li>• Force and Pressure</li>
+                    <li>• Force & pressure</li>
                     <li>• Friction</li>
-                    <li>• Chemical Effects of Electric Current</li>
+                    <li>• Sound</li>
+                    <li>• Coal & petroleum</li>
+                    <li>• Combustion & flame</li>
+                    <li>• Reaching the age of adolescence</li>
+                    <li>• Reproduction in animals</li>
                   </ul>
                 </div>
               </div>
@@ -922,12 +925,14 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Number Systems</li>
-                    <li>• Polynomials</li>
-                    <li>• Linear Equations in Two Variables</li>
+                    <li>• Number system</li>
+                    <li>• polynomials</li>
+                    <li>• coordinate geometry</li>
+                    <li>• Linear equations</li>
                     <li>• Triangles</li>
-                    <li>• Quadrilaterals</li>
-                    <li>• Statistics</li>
+                    <li>• Surface areas and volumes</li>
+                    <li>• Herons formula</li>
+                    <li>• Circles</li>
                   </ul>
                 </div>
 
@@ -938,11 +943,15 @@ const Admissions = () => {
                     </span>
                   </h4>
                   <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Matter in Our Surroundings</li>
-                    <li>• Atoms and Molecules</li>
+                    <li>• Atoms & molecules</li>
+                    <li>• Structure of atom</li>
                     <li>• Motion</li>
-                    <li>• Force and Laws of Motion</li>
-                    <li>• Work and Energy</li>
+                    <li>• Gravitation</li>
+                    <li>• Force & laws of motion</li>
+                    <li>• work & energy</li>
+                    <li>• Sound</li>
+                    <li>• Fundamental unit of life</li>
+                    <li>• Tissues</li>
                   </ul>
                 </div>
               </div>
@@ -960,30 +969,16 @@ const Admissions = () => {
                 <h3 className="text-2xl font-bold text-gray-800">Grade 10th</h3>
               </div>
 
-              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-4">
-                <p className="text-sm text-gray-700 font-medium">
-                  <FaCheckCircle className="inline text-yellow-600 mr-2" />
-                  Full syllabus of Class 10th will be covered
-                </p>
-              </div>
-
               <div className="space-y-4">
                 <div>
                   <h4 className="font-bold text-green-700 mb-2 flex items-center">
                     <span className="bg-green-200 px-2 py-1 rounded text-sm mr-2">
-                      MATHS
+                      MATHS (10th)
                     </span>
                   </h4>
-                  <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Real Numbers</li>
-                    <li>• Polynomials</li>
-                    <li>• Pair of Linear Equations</li>
-                    <li>• Quadratic Equations</li>
-                    <li>• Arithmetic Progressions</li>
-                    <li>• Triangles, Circles</li>
-                    <li>• Trigonometry</li>
-                    <li>• Statistics, Probability</li>
-                  </ul>
+                  <p className="text-sm text-gray-700 font-medium mb-2">
+                    Maths full syllabus (Std)
+                  </p>
                 </div>
 
                 <div>
@@ -992,15 +987,31 @@ const Admissions = () => {
                       SCIENCE
                     </span>
                   </h4>
-                  <ul className="space-y-1 text-gray-700 text-sm ml-4">
-                    <li>• Chemical Reactions</li>
-                    <li>• Acids, Bases and Salts</li>
-                    <li>• Metals and Non-metals</li>
-                    <li>• Life Processes</li>
-                    <li>• Electricity</li>
-                    <li>• Magnetic Effects</li>
-                    <li>• Light - Reflection & Refraction</li>
-                  </ul>
+                  <p className="text-sm text-gray-700 font-medium mb-2">
+                    Full syllabus (chemistry + physics)
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-blue-700 mb-2 flex items-center">
+                    <span className="bg-blue-200 px-2 py-1 rounded text-sm mr-2">
+                      BIOLOGY (10th)
+                    </span>
+                  </h4>
+                  <p className="text-sm text-gray-700 font-medium mb-2">
+                    Maths full syllabus (Basics)
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-green-700 mb-2 flex items-center">
+                    <span className="bg-green-200 px-2 py-1 rounded text-sm mr-2">
+                      SCIENCE (Bio)
+                    </span>
+                  </h4>
+                  <p className="text-sm text-gray-700 font-medium">
+                    Full syllabus (chemistry + physics + bio)
+                  </p>
                 </div>
               </div>
             </motion.div>
