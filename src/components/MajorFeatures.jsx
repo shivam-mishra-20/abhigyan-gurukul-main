@@ -12,8 +12,13 @@ import {
 
 const features = [
   {
+    icon: <FaCrown className="text-yellow-500" />,
+    text: "Special Mentorship Program",
+    description: "One-on-one guidance for academic excellence",
+  },
+  {
     icon: <FaUserFriends className="text-green-600" />,
-    text: "Limited Batch Size (15 Students)",
+    text: "Limited Batch Size (20 Students)",
     description: "Personalized attention for every student",
   },
   {
@@ -21,11 +26,7 @@ const features = [
     text: "Proven Success Ratio",
     description: "Track record of excellent results",
   },
-  {
-    icon: <FaCrown className="text-yellow-500" />,
-    text: "Special Mentorship Program",
-    description: "One-on-one guidance for academic excellence",
-  },
+
   {
     icon: <FaHandshake className="text-purple-600" />,
     text: "Student Centric Approach",

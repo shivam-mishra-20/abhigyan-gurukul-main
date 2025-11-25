@@ -45,11 +45,29 @@ const ScholarshipBanner = () => {
               SCHOLARSHIP TEST 2026-27 - REGISTER NOW!
             </motion.div>
 
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.25, type: "spring" }}
+              className="inline-block bg-yellow-400 text-green-800 px-4 md:px-6 py-2 md:py-3 rounded-2xl text-xl md:text-3xl font-black shadow-2xl border-4 border-yellow-300"
+            >
+              🎓 UP TO 30% OFF
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5 }}
+              className="text-base md:text-lg font-bold text-yellow-300 mb-3"
+            >
+              + Early Bird Discounts!
+            </motion.p>
+
             <motion.h2
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2"
+              className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2"
             >
               Scholarship Test cum Admission 2026-27
             </motion.h2>
@@ -58,17 +76,18 @@ const ScholarshipBanner = () => {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-white/90 text-sm md:text-base mb-2"
+              className="text-white/95 text-sm md:text-base mb-2 font-semibold"
             >
-              💰 Scholarship Pool: ₹50 Lakhs – Early-Bird & Performance Merit
+              🏆 Merit-Based Scholarships + Early Bird Discounts
             </motion.p>
             <motion.p
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.45 }}
-              className="text-white/80 text-xs md:text-sm mb-4 lg:mb-0"
+              className="text-white/90 text-xs md:text-sm mb-4 lg:mb-0"
             >
-              Early Bird: 5-10% Off • Performance Bonus • Grades 6-12
+              ₹50 Lakh Scholarship Pool | Grades 6-12 | Multiple Test Dates
+              Available
             </motion.p>
           </div>
 
@@ -95,19 +114,19 @@ const ScholarshipBanner = () => {
               </p>
             </div>
 
-            {/* Early Bird Discount */}
+            {/* Merit Scholarship */}
             <div className="bg-yellow-400 border-2 border-yellow-300 rounded-2xl p-4 min-w-[160px] hover:scale-105 transition-transform shadow-lg">
               <div className="flex items-center justify-center mb-2">
                 <FaTrophy className="text-green-700 text-xl mr-2" />
                 <span className="text-green-800 text-xs font-semibold uppercase">
-                  Early Bird
+                  Merit-Based
                 </span>
               </div>
               <p className="text-green-800 font-bold text-lg md:text-xl text-center">
-                Up to 10%
+                Up to 30%
               </p>
               <p className="text-green-700 text-xs text-center mt-1">
-                + Performance Bonus
+                + 10% Early Bird
               </p>
             </div>
 

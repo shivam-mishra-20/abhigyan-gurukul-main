@@ -192,14 +192,14 @@ const Admissions = () => {
 
   // Available Seats Data
   const availableSeats = [
-    { grade: "6th → 7th", seats: 20, stream: "" },
-    { grade: "7th → 8th", seats: 30, stream: "" },
-    { grade: "8th → 9th", seats: 40, stream: "" },
-    { grade: "9th → 10th", seats: 50, stream: "" },
-    { grade: "10th → 11th", seats: 30, stream: "Science" },
-    { grade: "10th → 11th", seats: 30, stream: "Commerce" },
-    { grade: "11th → 12th", seats: 7, stream: "Science" },
-    { grade: "11th → 12th", seats: 7, stream: "Commerce" },
+    { grade: "7th", seats: 20, stream: "" },
+    { grade: "8th", seats: 30, stream: "" },
+    { grade: "9th", seats: 40, stream: "" },
+    { grade: "10th", seats: 50, stream: "" },
+    { grade: "11th", seats: 30, stream: "Science" },
+    { grade: "11th", seats: 30, stream: "Commerce" },
+    { grade: "12th", seats: 7, stream: "Science" },
+    { grade: "12th", seats: 7, stream: "Commerce" },
   ];
 
   // Key dates
@@ -215,17 +215,17 @@ const Admissions = () => {
     {
       question: "How can I get a scholarship at Abhigyan Gurukul?",
       answer:
-        "We have a total scholarship pool of ₹50,00,000 for deserving students! This is distributed through our Scholarship Test cum Admission program based on two factors: (1) Early Bird Scholarships ranging from 5% to 10% based on your test registration date between 7th December 2025 and 11th January 2026, and (2) Performance-Based Merit scholarships awarded based on your test performance. Individual scholarships vary according to merit and registration timing. The earlier you register and the better you perform, the higher your scholarship benefits. Register early to maximize your benefits from this ₹50 lakh scholarship pool!",
+        "Transform your academic journey with our comprehensive scholarship program! We offer UP TO 30% OFF on tuition fees based on your test performance, PLUS an additional 10% Early Bird Discount for early registration. Our ₹50 Lakh scholarship pool rewards both merit and prompt decision-making. Simply register for our Scholarship Test cum Admission (7th December 2025 - 11th January 2026), excel in the test to earn merit-based discounts up to 30%, and register early to secure your bonus 10% Early Bird Discount. The higher you score and the earlier you register, the greater your savings!",
     },
     {
       question: "Can current students also appear for the scholarship test?",
       answer:
-        "Yes! Current students have a dedicated test date on 28th December 2025 at 10:00 AM. They can appear for the test to upgrade their current scholarship or avail additional benefits. The early bird discount for this date is 7%.",
+        "Yes! Current students have a dedicated test date on 28th December 2025 at 10:00 AM. They can appear for the test to upgrade their current scholarship benefits. This is an excellent opportunity to improve your scholarship percentage based on your current performance and potential.",
     },
     {
       question: "How is the ₹50 Lakh scholarship pool distributed?",
       answer:
-        "The overall scholarship value of up to ₹50,00,000 will be awarded to deserving students based on two key criteria: Early Admission Dates (5-10% early bird discount based on when you register) and Performance Merit (additional scholarships based on test scores). Individual scholarships vary according to merit - top performers in early test dates receive maximum benefits. The scholarship is designed to reward both prompt decision-making and academic excellence. All 217 seats have potential scholarship benefits, but the amount varies per student based on their performance and registration date.",
+        "Our scholarship model is designed to maximize value for deserving students: (1) Merit-Based Scholarships: Earn UP TO 30% OFF on tuition fees based on your test performance. Top scorers receive maximum discounts. (2) Early Bird Discount: Secure an ADDITIONAL 10% OFF by registering for earlier test dates. (3) Total Savings: Combine both benefits to receive substantial reductions on your educational investment. The ₹50 Lakh pool ensures multiple students benefit, with individual scholarships varying according to test merit and registration timing. This dual-benefit model rewards both academic excellence and prompt action.",
     },
     {
       question: "How many seats are available for admission?",
@@ -283,7 +283,7 @@ const Admissions = () => {
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-48 translate-y-48"></div>
         </div>
 
-        <div className="container mx-auto max-w-6xl relative z-10">
+        <div className="container mx-auto max-w-6xl relative z-10 ">
           <motion.div
             className="inline-block bg-yellow-400 text-green-800 px-4 py-2 rounded-full text-sm font-bold mb-4"
             initial={{ scale: 0 }}
@@ -293,28 +293,57 @@ const Admissions = () => {
             🎓 ADMISSIONS OPEN 2026-27
           </motion.div>
 
+          <div className="text-center mb-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.25, type: "spring" }}
+              className="inline-block bg-gradient-to-r from-yellow-400 to-orange-400 text-green-800 px-6 md:px-8 py-3 md:py-4 rounded-2xl text-2xl md:text-4xl font-black shadow-2xl border-4 border-yellow-300"
+            >
+              ⚡ UP TO 30% OFF ⚡
+            </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5 }}
+              className="text-lg md:text-2xl font-bold text-yellow-300 mt-2"
+            >
+              + Early Bird Discounts!
+            </motion.p>
+          </div>
+
           <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-6"
+            className="text-3xl md:text-5xl font-bold mb-4"
             {...fadeInUp}
           >
             Scholarship Test cum Admission 2026-27
           </motion.h1>
           <motion.p
-            className="text-xl md:text-2xl mb-4 opacity-95"
+            className="text-xl md:text-2xl mb-3 opacity-95 font-semibold"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            Early Bird Scholarships + Performance-Based Rewards
+            Transform Your Future with Merit-Based Scholarships
           </motion.p>
           <motion.p
-            className="text-lg mb-8 opacity-90"
+            className="text-base md:text-lg mb-2 opacity-90"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            For Grades 6th to 12th | Multiple Test Dates | Flat 10% Early Bird +
-            Additional Performance Bonus (upto 0-30%)
+            <strong>
+              Test Your Potential, Unlock Premium Education at Reduced Cost
+            </strong>
+          </motion.p>
+          <motion.p
+            className="text-sm md:text-base mb-8 opacity-85"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.6 }}
+          >
+            Up to 30% OFF on Test Merit + Additional 10% Early Bird Discount |
+            Grades 6-12 | ₹50L Scholarship Pool
           </motion.p>
           <motion.div
             className="flex flex-wrap gap-4"
@@ -356,11 +385,12 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              📅 Test Dates & Early Bird Scholarships
+              📅 Test Dates & Scholarship Benefits
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Register early to maximize your scholarship benefits! Earlier test
-              dates offer higher discounts.
+            <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+              <strong>Earn up to 30% OFF based on test performance</strong> +
+              secure an additional 10% Early Bird Discount! Register for earlier
+              dates to maximize your total savings.
             </p>
           </motion.div>
 
@@ -398,29 +428,39 @@ const Admissions = () => {
                     ⭐ BEST OFFER
                   </div>
                 )}
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <FaCalendarAlt className="text-green-600 text-2xl mb-2" />
+                <div className="mb-3">
+                  <div className="flex items-center mb-2">
+                    <FaCalendarAlt className="text-green-600 text-2xl mr-2" />
                     <h3 className="font-bold text-gray-800 text-lg">
                       {item.date}
                     </h3>
-                    {item.special && (
-                      <p className="text-xs text-blue-600 font-semibold mt-1">
-                        {item.special}
-                      </p>
-                    )}
                   </div>
-                  <div className="text-right">
-                    <p className="text-3xl font-bold text-green-600">
-                      {item.discount}
+                  {item.special && (
+                    <p className="text-xs text-blue-600 font-semibold mb-2">
+                      {item.special}
                     </p>
-                    <p className="text-sm text-gray-600">Early Bird</p>
+                  )}
+                  <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg p-3 mb-2">
+                    <p className="text-2xl font-bold text-center">
+                      Up to 30% OFF
+                    </p>
+                    <p className="text-xs text-center opacity-90">
+                      Merit-Based Scholarship
+                    </p>
+                  </div>
+                  <div className="bg-yellow-400 text-green-800 rounded-lg p-2 mb-2">
+                    <p className="text-xl font-bold text-center">
+                      + Flat {item.discount}
+                    </p>
+                    <p className="text-xs text-center font-semibold">
+                      Early Bird Discount
+                    </p>
                   </div>
                 </div>
-                <div className="bg-white/50 rounded-lg p-3 mt-4">
-                  <p className="text-sm text-gray-700 flex items-center">
+                <div className="bg-white/50 rounded-lg p-3">
+                  <p className="text-sm text-gray-700 flex items-center justify-center">
                     <FaCheckCircle className="text-green-500 mr-2" />
-                    Exam: 10:00 AM - 1:00 PM
+                    10:00 AM - 1:00 PM
                   </p>
                 </div>
               </motion.div>
@@ -470,8 +510,9 @@ const Admissions = () => {
               Scholarship Distribution Model
             </h2>
             <p className="text-gray-600 max-w-3xl mx-auto text-lg">
-              Overall scholarship value up to ₹50,00,000 will be awarded to
-              deserving students based on performance and early admission dates
+              <strong>Up to 30% OFF on tuition fees</strong> based on your test
+              merit, plus an additional 10% Early Bird Discount. Total
+              scholarship pool of ₹50,00,000 available for deserving students.
             </p>
           </motion.div>
 
@@ -490,17 +531,18 @@ const Admissions = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Early Bird Scholarships
+                    Early Bird Discounts
                   </h3>
                   <p className="text-yellow-600 font-semibold">
-                    5% - 10% Discount
+                    Additional 10% OFF
                   </p>
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
-                Register early to secure higher scholarship percentages! The
-                earlier you register, the more you save from the scholarship
-                pool.
+                Secure your seat early and save more! Register for the earliest
+                test dates to receive an{" "}
+                <strong>additional 10% Early Bird Discount</strong> on top of
+                your merit-based scholarship.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center text-gray-700">
@@ -557,17 +599,16 @@ const Admissions = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Performance Merit
+                    Merit-Based Scholarships
                   </h3>
-                  <p className="text-green-600 font-semibold">
-                    Variable Based on Score
-                  </p>
+                  <p className="text-green-600 font-semibold">Up to 30% OFF</p>
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
-                Excel in the scholarship test to earn additional merit-based
-                scholarships from the ₹50 lakh pool. Top performers receive
-                maximum benefits!
+                Excel in the scholarship test and earn{" "}
+                <strong>up to 30% OFF</strong> on your tuition fees! Your
+                performance determines your discount from our ₹50 lakh
+                scholarship pool. Top achievers receive maximum benefits.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start text-gray-700">
@@ -620,34 +661,39 @@ const Admissions = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex-1">
                 <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                  📊 How Individual Scholarships Are Calculated
+                  📊 How Your Scholarship is Calculated
                 </h3>
                 <p className="text-white/90 text-lg mb-4">
                   <strong>
-                    Individual scholarships vary according to merit.
+                    Maximize your savings with our dual-benefit scholarship
+                    model!
                   </strong>{" "}
-                  Your final scholarship amount depends on:
+                  Your total discount depends on:
                 </p>
                 <div className="space-y-2 text-white/90">
                   <p className="flex items-start">
                     <span className="mr-2">1.</span>
                     <span>
-                      <strong>Test Date Selection:</strong> Earlier dates =
-                      Higher early bird percentage (5-10%)
+                      <strong>Test Performance (Primary):</strong> Score high to
+                      earn
+                      <strong> up to 30% OFF</strong> on tuition fees based on
+                      merit
                     </span>
                   </p>
                   <p className="flex items-start">
                     <span className="mr-2">2.</span>
                     <span>
-                      <strong>Test Performance:</strong> Your score determines
-                      additional merit scholarship from the ₹50L pool
+                      <strong>Early Bird Discount (Bonus):</strong> Register for
+                      earlier test dates to secure an{" "}
+                      <strong>additional 10% OFF</strong>
                     </span>
                   </p>
                   <p className="flex items-start">
                     <span className="mr-2">3.</span>
                     <span>
-                      <strong>Combined Benefits:</strong> Both early bird and
-                      performance scholarships are awarded together
+                      <strong>Total Potential Savings:</strong> Combine both
+                      benefits for maximum value from our ₹50 Lakh scholarship
+                      pool
                     </span>
                   </p>
                 </div>
@@ -810,6 +856,59 @@ const Admissions = () => {
             whileInView="show"
             viewport={{ once: true }}
           >
+            {/* Grade 6th Syllabus */}
+            <motion.div
+              className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border-2 border-cyan-200 p-6 shadow-lg hover:shadow-xl transition-all"
+              variants={itemAnimation}
+            >
+              <div className="flex items-center mb-4">
+                <div className="bg-cyan-500 text-white rounded-full p-3 mr-3">
+                  <FaGraduationCap className="text-2xl" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    6th → 7th Grade
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    Syllabus: Current 6th Grade
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-bold text-cyan-700 mb-2 flex items-center">
+                    <span className="bg-cyan-200 px-2 py-1 rounded text-sm mr-2">
+                      MATHS
+                    </span>
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm ml-4">
+                    <li>• Decimals</li>
+                    <li>• Fraction</li>
+                    <li>• Algebra</li>
+                    <li>• Mensuration</li>
+                    <li>• Ratio and proportion</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-green-700 mb-2 flex items-center">
+                    <span className="bg-green-200 px-2 py-1 rounded text-sm mr-2">
+                      SCIENCE
+                    </span>
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm ml-4">
+                    <li>• Diversity in Living World</li>
+                    <li>• Materials around us</li>
+                    <li>• Temperature and its measurement</li>
+                    <li>• Measurement of Length and Motion</li>
+                    <li>• Mindful Eating: A path to Healthy Body</li>
+                    <li>• A journey through states of water</li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Grade 7th Syllabus */}
             <motion.div
               className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-6 shadow-lg hover:shadow-xl transition-all"
@@ -819,7 +918,14 @@ const Admissions = () => {
                 <div className="bg-blue-500 text-white rounded-full p-3 mr-3">
                   <FaGraduationCap className="text-2xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800">Grade 7th</h3>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    7th → 8th Grade
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    Syllabus: Current 7th Grade
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -866,7 +972,14 @@ const Admissions = () => {
                 <div className="bg-purple-500 text-white rounded-full p-3 mr-3">
                   <FaGraduationCap className="text-2xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800">Grade 8th</h3>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    8th → 9th Grade
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    Syllabus: Current 8th Grade
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -914,7 +1027,14 @@ const Admissions = () => {
                 <div className="bg-orange-500 text-white rounded-full p-3 mr-3">
                   <FaGraduationCap className="text-2xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800">Grade 9th</h3>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    9th → 10th Grade
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    Syllabus: Current 9th Grade
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -966,7 +1086,14 @@ const Admissions = () => {
                 <div className="bg-green-600 text-white rounded-full p-3 mr-3">
                   <FaGraduationCap className="text-2xl" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800">Grade 10th</h3>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    10th → 11th Grade
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    Syllabus: Current 10th Grade
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -1459,6 +1586,166 @@ const Admissions = () => {
                 </div>
               </form>
             )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Terms and Conditions Section */}
+      <section className="py-16 px-4 md:px-8 bg-gradient-to-br from-gray-50 to-green-50">
+        <div className="container mx-auto max-w-5xl">
+          <motion.div
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+              Terms & Conditions
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Please read the following terms carefully before registering for
+              the scholarship test
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-2xl shadow-lg p-6 md:p-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="space-y-6 text-gray-700">
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                  <span className="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">
+                    1
+                  </span>
+                  Scholarship Eligibility
+                </h3>
+                <ul className="ml-11 space-y-2 text-sm md:text-base">
+                  <li>
+                    • Scholarships are awarded based on test performance and
+                    registration date
+                  </li>
+                  <li>
+                    • Merit-based discount (up to 30% OFF) is determined by test
+                    scores
+                  </li>
+                  <li>
+                    • Early Bird Discount (10%) is available for registrations
+                    on or before the first test date
+                  </li>
+                  <li>
+                    • Scholarships are applicable only for the academic year
+                    2026-27
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                  <span className="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">
+                    2
+                  </span>
+                  Test Registration
+                </h3>
+                <ul className="ml-11 space-y-2 text-sm md:text-base">
+                  <li>
+                    • Students must register before their chosen test date
+                  </li>
+                  <li>
+                    • Registration is subject to seat availability (217 total
+                    seats)
+                  </li>
+                  <li>• Students can appear for only one test date</li>
+                  <li>
+                    • Minimum 70% marks in the previous academic year required
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                  <span className="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">
+                    3
+                  </span>
+                  Scholarship Distribution
+                </h3>
+                <ul className="ml-11 space-y-2 text-sm md:text-base">
+                  <li>
+                    • Total scholarship pool of ₹50,00,000 will be distributed
+                    among deserving students
+                  </li>
+                  <li>
+                    • Individual scholarship amounts vary based on test merit
+                    and registration timing
+                  </li>
+                  <li>
+                    • Scholarship percentages are calculated on annual tuition
+                    fees only
+                  </li>
+                  <li>
+                    • Scholarships cannot be transferred or exchanged for cash
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                  <span className="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">
+                    4
+                  </span>
+                  Test Guidelines
+                </h3>
+                <ul className="ml-11 space-y-2 text-sm md:text-base">
+                  <li>• Test duration: 3 hours (10:00 AM - 1:00 PM)</li>
+                  <li>• No negative marking in the scholarship test</li>
+                  <li>
+                    • Students must arrive 30 minutes before the test start time
+                  </li>
+                  <li>• Valid ID proof and admit card are mandatory</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center">
+                  <span className="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center mr-3 font-bold">
+                    5
+                  </span>
+                  Admission Confirmation
+                </h3>
+                <ul className="ml-11 space-y-2 text-sm md:text-base">
+                  <li>
+                    • Admission is subject to document verification and
+                    availability of seats
+                  </li>
+                  <li>
+                    • Selected students must complete admission formalities
+                    within the specified timeframe
+                  </li>
+                  <li>
+                    • Scholarship benefits will be reflected in the fee
+                    structure upon admission
+                  </li>
+                  <li>
+                    • The institution reserves the right to modify terms as
+                    necessary
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg mt-6">
+                <p className="text-sm text-gray-800">
+                  <strong className="text-yellow-800">Important:</strong> By
+                  registering for the scholarship test, applicants agree to
+                  abide by all terms and conditions set forth by Abhigyan
+                  Gurukul. The institution reserves the right to make final
+                  decisions on all scholarship-related matters.
+                </p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>

@@ -15,39 +15,67 @@ const videoData = [
   {
     id: "1",
     title:
-      "Basic Maths for Physics - Differentiation (Part 1) for Class 11 | JEE / NEET 2025",
+      "Human eye and The Colourful world - Part 1 - for Class 10th | 2025-2026 | Science Chapter 10",
     description:
-      "Basic Maths for Physics - Differentiation (Part 1) for Class 11 | JEE / NEET 2025",
-    duration: "41 mins",
-    author: "Abhigyan Sir",
+      "Human eye and The Colourful world - Part 1 - for Class 10th | 2025-2026 | Science Chapter 10",
+    duration: "48 mins",
+    author: "Chandan Sir",
     price: "Free",
-    youtubeId: "TvNB4fHYJs4",
+    youtubeId: "LksROepdWEo",
     rating: "4.9",
-    reviews: "238",
+    reviews: "234",
   },
   {
     id: "2",
     title:
-      "REAL NUMBERS - Lecture 1 | Class 10th |  Number of Zeros in an expression ? ",
+      "Human eye and The Colourful world - Part 2 - for Class 10th | 2025-2026 | Science Chapter 10 ",
     description:
-      "REAL NUMBERS - Lecture 1 | Class 10th |  Number of Zeros in an expression ? ",
-    duration: "10:39 mins",
-    author: "Abhigyan Sir",
+      "Human eye and The Colourful world - Part 2 - for Class 10th | 2025-2026 | Science Chapter 10 ",
+    duration: "57:59 mins",
+    author: "Chandan Sir",
     price: "Free",
-    youtubeId: "oLwUa5tdxGQ",
+    youtubeId: "BaFY8Vm6BLM",
     rating: "4.8",
     reviews: "156",
   },
   {
     id: "3",
-    title: "Motion - Absolute or Relative? #2 | Chapter 8 | Class 9",
-    description: "Is motion relative or absolute? Lets discuss in this video!",
-    duration: "15 min",
-    author: "Abhigyan Sir",
+    title:
+      "Laws of motion - Spring Force Problems set 1 | Chapter 4 Physics | Class 11th | JEE/NEET 2025-2026",
+    description:
+      "Laws of motion - Spring Force Problems set 1 | Chapter 4 Physics | Class 11th | JEE/NEET 2025-2026",
+    duration: "48 min",
+    author: "Chandan Sir",
     price: "Free",
-    youtubeId: "UlhjoJ8l6iU",
+    youtubeId: "9IeQJRUFxEg",
     rating: "4.7",
     reviews: "124",
+  },
+  {
+    id: "4",
+    title:
+      "AP - Arithmetic Progressions - Lecture 1 | Class 10th Maths | Chapter 5 | 2025-2026",
+    description:
+      "AP - Arithmetic Progressions - Lecture 1 | Class 10th Maths | Chapter 5 | 2025-2026",
+    duration: "10:46 mins",
+    author: "Abhigyan Sir",
+    price: "Free",
+    youtubeId: "nZtPtRYyuKg",
+    rating: "4.8",
+    reviews: "98",
+  },
+  {
+    id: "5",
+    title:
+      "AP - Arithmetic Progressions - Lecture 2 | Class 10th Maths | Chapter 5 | 2025-2026",
+    description:
+      "AP - Arithmetic Progressions - Lecture 2 | Class 10th Maths | Chapter 5 | 2025-2026",
+    duration: "59:37 mins",
+    author: "Abhigyan Sir",
+    price: "Free",
+    youtubeId: "EGGXKtF6WL8",
+    rating: "4.7",
+    reviews: "85",
   },
 ];
 

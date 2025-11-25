@@ -95,11 +95,30 @@ const ScholarshipPopup = () => {
                   LIMITED TIME OFFER
                 </motion.div>
 
+                <div className="text-center mb-3">
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.25, type: "spring" }}
+                    className="inline-block bg-gradient-to-r from-yellow-400 to-orange-400 text-green-800 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl text-xl sm:text-2xl md:text-3xl font-black shadow-2xl border-4 border-yellow-300"
+                  >
+                    🎓 UP TO 30% OFF 🎓
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35, duration: 0.5 }}
+                    className="text-base sm:text-lg md:text-xl font-bold text-yellow-400 mt-2"
+                  >
+                    + Early Bird Discounts!
+                  </motion.p>
+                </div>
+
                 <motion.h2
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3"
+                  className="text-xl sm:text-2xl md:text-3xl font-bold mb-3"
                 >
                   Scholarship Test cum Admission 2026-27
                 </motion.h2>
@@ -108,18 +127,18 @@ const ScholarshipPopup = () => {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.35 }}
-                  className="inline-block bg-yellow-400 text-green-800 px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base md:text-lg font-bold mb-3 shadow-lg"
+                  className="inline-block bg-white/20 backdrop-blur-sm text-white px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base md:text-lg font-bold mb-3 border-2 border-white/40"
                 >
-                  💰 Scholarship Pool: ₹50 Lakhs
+                  💰 ₹50 Lakh Scholarship Pool
                 </motion.div>
 
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="text-white/90 text-base sm:text-lg mb-2"
+                  className="text-white/95 text-base sm:text-lg mb-2 font-semibold"
                 >
-                  Additional OFF Based on Early-Bird & Performance Merit
+                  Merit-Based Scholarships + Early Bird Discounts
                 </motion.p>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
@@ -150,34 +169,34 @@ const ScholarshipPopup = () => {
                     {
                       date: "7th December",
                       discount: "10%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                       highlight: true,
                     },
                     {
                       date: "14th December",
                       discount: "9%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                     },
                     {
                       date: "21st December",
                       discount: "8%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                     },
                     {
                       date: "28th December",
                       discount: "7%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                       special: "Current Students",
                     },
                     {
                       date: "4th January",
                       discount: "6%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                     },
                     {
                       date: "11th January",
                       discount: "5%",
-                      label: "additional OFF",
+                      label: "Early Bird OFF",
                     },
                   ].map((item, idx) => (
                     <motion.div
@@ -206,12 +225,20 @@ const ScholarshipPopup = () => {
                             {item.special}
                           </p>
                         )}
-                        <div className="text-center bg-white/50 rounded-lg p-2 mb-2">
-                          <p className="text-2xl sm:text-3xl font-bold text-green-600">
-                            {item.discount}
+                        <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg p-2 mb-2">
+                          <p className="text-base sm:text-lg font-bold text-center">
+                            Up to 30% OFF
                           </p>
-                          <p className="text-[10px] sm:text-xs text-gray-700 font-semibold">
-                            {item.label}
+                          <p className="text-[9px] sm:text-[10px] text-center opacity-90">
+                            Merit-Based Scholarship
+                          </p>
+                        </div>
+                        <div className="bg-yellow-400 text-green-800 rounded-lg p-2 mb-2">
+                          <p className="text-sm sm:text-base font-bold text-center">
+                            + Flat {item.discount}
+                          </p>
+                          <p className="text-[9px] sm:text-[10px] text-center font-semibold">
+                            Early Bird Discount
                           </p>
                         </div>
                       </div>
@@ -239,14 +266,14 @@ const ScholarshipPopup = () => {
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { grade: "6th → 7th", seats: 20, stream: "" },
-                    { grade: "7th → 8th", seats: 30, stream: "" },
-                    { grade: "8th → 9th", seats: 40, stream: "" },
-                    { grade: "9th → 10th", seats: 50, stream: "" },
-                    { grade: "10th → 11th", seats: 30, stream: "Science" },
-                    { grade: "10th → 11th", seats: 30, stream: "Commerce" },
-                    { grade: "11th → 12th", seats: 7, stream: "Science" },
-                    { grade: "11th → 12th", seats: 7, stream: "Commerce" },
+                    { grade: "7th", seats: 20, stream: "" },
+                    { grade: "8th", seats: 30, stream: "" },
+                    { grade: "9th", seats: 40, stream: "" },
+                    { grade: "10th", seats: 50, stream: "" },
+                    { grade: "11th", seats: 30, stream: "Science" },
+                    { grade: "11th", seats: 30, stream: "Commerce" },
+                    { grade: "12th", seats: 7, stream: "Science" },
+                    { grade: "12th", seats: 7, stream: "Commerce" },
                   ].map((item, idx) => {
                     const isLimited = item.seats <= 7;
                     return (
@@ -333,25 +360,25 @@ const ScholarshipPopup = () => {
                   Scholarship Benefits
                 </h3>
                 <div className="space-y-2">
+                  <div className="flex items-start bg-yellow-50 p-3 rounded-lg border-2 border-yellow-300">
+                    <FaCheckCircle className="text-yellow-600 mt-1 mr-3 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        Merit-Based Scholarship
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        <strong>Up to 30% OFF</strong> based on test performance
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex items-start bg-green-50 p-3 rounded-lg">
                     <FaCheckCircle className="text-green-500 mt-1 mr-3 flex-shrink-0" />
                     <div>
                       <p className="font-semibold text-gray-800">
-                        Early Bird Scholarships
+                        Early Bird Discount (Bonus)
                       </p>
                       <p className="text-sm text-gray-600">
-                        5% to 10% additional OFF on tuition fees
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start bg-yellow-50 p-3 rounded-lg">
-                    <FaCheckCircle className="text-yellow-500 mt-1 mr-3 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-gray-800">
-                        Performance-Based Scholarship
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Additional OFF based on test results
+                        Additional 10% OFF for early registration
                       </p>
                     </div>
                   </div>
@@ -369,24 +396,31 @@ const ScholarshipPopup = () => {
                 </div>
               </motion.div>
 
-              {/* Important Notices */}
+              {/* Important Highlights */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
                 className="space-y-3 mb-6"
               >
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded-lg">
+                  <p className="text-sm text-gray-800 font-semibold">
+                    🎯 <strong>Maximize Your Savings:</strong> Score high to
+                    earn up to 30% OFF + secure your spot early for an
+                    additional 10% Early Bird Discount!
+                  </p>
+                </div>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>For Current Students:</strong> Separate test on 28th
-                    December for all grades
+                    <strong>For Current Students:</strong> Upgrade your
+                    scholarship benefits on 28th December
                   </p>
                 </div>
                 <div className="bg-purple-50 border-l-4 border-purple-500 p-3 rounded-lg">
                   <p className="text-sm text-purple-800">
-                    <strong>For New Admissions:</strong> Choose any test date
-                    from 7th Dec to 11th Jan - earlier you register, higher the
-                    early bird discount!
+                    <strong>For New Admissions:</strong> Multiple test dates
+                    from 7th Dec to 11th Jan - register early to maximize
+                    benefits!
                   </p>
                 </div>
               </motion.div>
@@ -402,7 +436,7 @@ const ScholarshipPopup = () => {
                   onClick={handleEnrollNow}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
                 >
-                  Register Now for Test
+                  Register Now - Save Up To 30%
                   <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
 
@@ -410,19 +444,61 @@ const ScholarshipPopup = () => {
                   onClick={handleLearnMore}
                   className="flex-1 bg-white hover:bg-gray-50 text-green-600 px-8 py-4 rounded-xl font-bold text-lg border-2 border-green-600 hover:border-green-700 transition-all flex items-center justify-center"
                 >
-                  Learn More
+                  View Details
                 </button>
+              </motion.div>
+
+              {/* Terms and Conditions */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1.6 }}
+                className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-200"
+              >
+                <h3 className="text-base font-bold text-gray-800 mb-3 flex items-center">
+                  <span className="text-green-600 mr-2">ℹ️</span>
+                  Terms & Conditions
+                </h3>
+                <div className="space-y-2 text-xs text-gray-700">
+                  <p>
+                    • <strong>Scholarship Eligibility:</strong> Based on test
+                    merit (up to 30% OFF) + Early Bird Discount (10%)
+                  </p>
+                  <p>
+                    • <strong>Test Registration:</strong> Register before chosen
+                    test date. Minimum 70% marks required
+                  </p>
+                  <p>
+                    • <strong>Distribution:</strong> ₹50L pool distributed among
+                    deserving students. Individual amounts vary
+                  </p>
+                  <p>
+                    • <strong>Test Guidelines:</strong> 3-hour test (10 AM-1
+                    PM). No negative marking. ID proof mandatory
+                  </p>
+                  <p>
+                    • <strong>Admission:</strong> Subject to document
+                    verification and seat availability (217 total seats)
+                  </p>
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-300">
+                  <p className="text-xs text-gray-600 italic">
+                    By registering, you agree to abide by all terms. Institution
+                    reserves right to make final decisions.
+                  </p>
+                </div>
               </motion.div>
 
               {/* Footer Text */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.6 }}
-                className="text-center text-sm text-gray-500 mt-6"
+                transition={{ delay: 1.7 }}
+                className="text-center text-sm text-gray-600 mt-6 font-medium"
               >
-                Don&apos;t miss this opportunity to get quality education at a
-                reduced cost!
+                <strong>Limited Seats Available!</strong> Secure premium
+                education with substantial savings. Register today and unlock
+                your potential!
               </motion.p>
             </div>
           </motion.div>
