@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import {
@@ -269,8 +270,136 @@ const Admissions = () => {
     },
   ];
 
+  // FAQ Schema for Rich Snippets
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqData.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <div className="bg-gray-50">
+      <Helmet>
+        {/* Primary Meta Tags */}
+        <title>
+          Admissions 2026-27 | Up to 30% Scholarship | Abhigyan Gurukul
+        </title>
+        <meta
+          name="title"
+          content="Admissions 2026-27 | Up to 30% Scholarship | Abhigyan Gurukul"
+        />
+        <meta
+          name="description"
+          content="Apply now for Abhigyan Gurukul Admissions 2026-27. Get UP TO 30% OFF on tuition fees through our merit-based scholarship test + 10% Early Bird Discount. ₹50 Lakh scholarship pool for grades 6-12. Limited seats available. Register for scholarship test from Dec 7, 2025 to Jan 11, 2026."
+        />
+        <meta
+          name="keywords"
+          content="Abhigyan Gurukul admissions, school scholarship 2026, merit scholarship India, admission test 2026, CBSE school admission, early bird discount, educational scholarship, school admission near me, best school Bihar, affordable quality education, student scholarship program, admission open 2026"
+        />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:title"
+          content="Admissions 2026-27 | Up to 30% Scholarship | Abhigyan Gurukul"
+        />
+        <meta
+          property="og:description"
+          content="Transform your future with merit-based scholarships. Get UP TO 30% OFF + 10% Early Bird Discount. ₹50L scholarship pool. Apply now!"
+        />
+        <meta property="og:image" content="/ABHIGYAN_GURUKUL_logo.svg" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Admissions 2026-27 | Up to 30% Scholarship | Abhigyan Gurukul"
+        />
+        <meta
+          name="twitter:description"
+          content="Transform your future with merit-based scholarships. Get UP TO 30% OFF + 10% Early Bird Discount. ₹50L scholarship pool. Apply now!"
+        />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://abhigyan-gurukul.com/admissions" />
+
+        {/* Structured Data - FAQ Schema */}
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+
+        {/* Structured Data - Organization */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            name: "Abhigyan Gurukul",
+            description:
+              "Premier educational institution offering quality education with merit-based scholarships",
+            url: "https://abhigyan-gurukul.com",
+            logo: "https://abhigyan-gurukul.com/ABHIGYAN_GURUKUL_logo.svg",
+            address: {
+              "@type": "PostalAddress",
+              addressCountry: "IN",
+            },
+          })}
+        </script>
+
+        {/* Structured Data - Breadcrumb */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://abhigyan-gurukul.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Admissions",
+                item: "https://abhigyan-gurukul.com/admissions",
+              },
+            ],
+          })}
+        </script>
+
+        {/* Structured Data - Event (Scholarship Test) */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Event",
+            name: "Scholarship Test cum Admission 2026-27",
+            description:
+              "Merit-based scholarship test for grades 6-12. Get up to 30% OFF on tuition fees plus early bird discounts.",
+            startDate: "2025-12-07T10:00",
+            endDate: "2026-01-11T13:00",
+            eventStatus: "https://schema.org/EventScheduled",
+            eventAttendanceMode:
+              "https://schema.org/OfflineEventAttendanceMode",
+            organizer: {
+              "@type": "EducationalOrganization",
+              name: "Abhigyan Gurukul",
+              url: "https://abhigyan-gurukul.com",
+            },
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "INR",
+              availability: "https://schema.org/InStock",
+              url: "https://abhigyan-gurukul.com/enrollnow",
+            },
+          })}
+        </script>
+      </Helmet>
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
@@ -316,16 +445,17 @@ const Admissions = () => {
             className="text-3xl md:text-5xl font-bold mb-4"
             {...fadeInUp}
           >
-            Scholarship Test cum Admission 2026-27
+            Admissions Open 2026-27 | Scholarship Test & Enrollment
           </motion.h1>
-          <motion.p
+          <motion.h2
             className="text-xl md:text-2xl mb-3 opacity-95 font-semibold"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            Transform Your Future with Merit-Based Scholarships
-          </motion.p>
+            Transform Your Future with Merit-Based Scholarships at Abhigyan
+            Gurukul
+          </motion.h2>
           <motion.p
             className="text-base md:text-lg mb-2 opacity-90"
             initial={{ opacity: 0, y: 20 }}
@@ -343,7 +473,13 @@ const Admissions = () => {
             transition={{ delay: 0.35, duration: 0.6 }}
           >
             Up to 30% OFF on Test Merit + Additional 10% Early Bird Discount |
-            Grades 6-12 | ₹50L Scholarship Pool
+            Grades 6-12 | ₹50L Scholarship Pool |{" "}
+            <a
+              href="/about"
+              className="text-yellow-300 font-bold hover:underline"
+            >
+              Learn about us
+            </a>
           </motion.p>
           <motion.div
             className="flex flex-wrap gap-4"
@@ -356,8 +492,9 @@ const Admissions = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-yellow-400 text-green-800 px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-yellow-300 transition"
               onClick={() => navigate("/enrollnow")}
+              aria-label="Register for Abhigyan Gurukul Scholarship Test 2026"
             >
-              Register Now
+              Register for Scholarship Test
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -367,12 +504,104 @@ const Admissions = () => {
                 const datesElement = document.getElementById("test-dates");
                 datesElement.scrollIntoView({ behavior: "smooth" });
               }}
+              aria-label="View scholarship test dates and early bird discounts"
             >
-              View Test Dates
+              View Test Dates & Discounts
             </motion.button>
           </motion.div>
         </div>
       </motion.section>
+
+      {/* Scholarship Highlights Section - Quick Benefits */}
+      <section className="py-12 px-4 md:px-8 bg-gradient-to-r from-green-50 to-emerald-50 border-y-4 border-green-600">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              🎓 Why Choose Abhigyan Gurukul Scholarship Program?
+            </h2>
+            <p className="text-gray-600 text-sm md:text-base">
+              India&apos;s Most Rewarding Merit-Based Scholarship for School
+              Students
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            variants={containerAnimation}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+          >
+            <motion.div
+              className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-600"
+              variants={itemAnimation}
+            >
+              <div className="flex items-start">
+                <FaTrophy className="text-3xl text-yellow-500 mr-4 mt-1" />
+                <div>
+                  <h3 className="font-bold text-lg text-gray-800 mb-2">
+                    ₹50 Lakh Scholarship Pool
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Generous financial aid for deserving students across grades
+                    6-12. Merit-based rewards up to 30% tuition fee discount.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-yellow-500"
+              variants={itemAnimation}
+            >
+              <div className="flex items-start">
+                <FaBolt className="text-3xl text-orange-500 mr-4 mt-1" />
+                <div>
+                  <h3 className="font-bold text-lg text-gray-800 mb-2">
+                    Early Bird Bonus Discounts
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Register early and get flat 5-10% additional discount!
+                    Combine with merit scholarship for maximum savings on
+                    education.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-600"
+              variants={itemAnimation}
+            >
+              <div className="flex items-start">
+                <FaGraduationCap className="text-3xl text-blue-600 mr-4 mt-1" />
+                <div>
+                  <h3 className="font-bold text-lg text-gray-800 mb-2">
+                    Quality Education Guaranteed
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Expert faculty, modern facilities, and proven track record.
+                    Join 217 students getting premium education at reduced cost.{" "}
+                    <a
+                      href="/courses"
+                      className="text-green-600 font-semibold hover:underline"
+                    >
+                      View programs
+                    </a>
+                    .
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Test Dates & Early Bird Scholarships Section */}
       <section id="test-dates" className="py-16 px-4 md:px-8 bg-white">
@@ -385,7 +614,7 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              📅 Test Dates & Scholarship Benefits
+              📅 Scholarship Test Dates 2026 & Early Bird Benefits
             </h2>
             <p className="text-gray-600 max-w-3xl mx-auto text-lg">
               <strong>Earn up to 30% OFF based on test performance</strong> +
@@ -601,7 +830,9 @@ const Admissions = () => {
                   <h3 className="text-2xl font-bold text-gray-800">
                     Merit-Based Scholarships
                   </h3>
-                  <p className="text-green-600 font-semibold">Up to 30% OFF</p>
+                  <p className="text-green-600 font-semibold">
+                    Up to 30% OFF on Tuition Fees
+                  </p>
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
@@ -609,6 +840,14 @@ const Admissions = () => {
                 <strong>up to 30% OFF</strong> on your tuition fees! Your
                 performance determines your discount from our ₹50 lakh
                 scholarship pool. Top achievers receive maximum benefits.
+                Explore our{" "}
+                <a
+                  href="/courses"
+                  className="text-green-600 font-semibold hover:underline"
+                >
+                  academic programs
+                </a>{" "}
+                to see scholarship-eligible courses.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start text-gray-700">
@@ -729,11 +968,11 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-              Available Seats for 2026-27
+              Available Admission Seats 2026-27 | Limited Vacancies
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
               Total <span className="font-bold text-green-600">217 seats</span>{" "}
-              available across all grades
+              available across all grades. Apply early to secure your seat!
             </p>
           </motion.div>
 
@@ -842,7 +1081,7 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-              Scholarship Test Syllabus
+              Scholarship Test Syllabus 2026 | Grade-wise Exam Pattern
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
               Prepare for the test with our detailed grade-wise syllabus
@@ -1601,11 +1840,18 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-              Terms & Conditions
+              📋 Scholarship Terms & Conditions | Admission Guidelines
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Please read the following terms carefully before registering for
-              the scholarship test
+              the scholarship test. Contact us at{" "}
+              <a
+                href="/admissions#inquiry-form"
+                className="text-green-600 font-semibold hover:underline"
+              >
+                admissions
+              </a>{" "}
+              for clarifications.
             </p>
           </motion.div>
 
@@ -1761,11 +2007,19 @@ const Admissions = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl font-bold text-gray-800 mb-3">
-              Frequently Asked Questions
+              Admission FAQs | Scholarship & Enrollment Questions Answered
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Find answers to commonly asked questions about our admission
-              process.
+              process, scholarship eligibility, and test details. Still have
+              questions?{" "}
+              <a
+                href="#inquiry-form"
+                className="text-green-600 font-semibold hover:underline"
+              >
+                Contact us
+              </a>
+              .
             </p>
           </motion.div>
 

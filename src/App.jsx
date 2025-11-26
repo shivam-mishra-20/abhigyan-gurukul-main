@@ -10,6 +10,7 @@ import {
 } from "react-router";
 import { useMediaQuery } from "react-responsive";
 import { useEffect } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingLeaderboardButton from "./components/FloatingLeaderboardButton";
@@ -119,11 +120,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <TrackingWrapper>
-        <AppContent />
-      </TrackingWrapper>
-    </Router>
+    <HelmetProvider>
+      <Router>
+        <TrackingWrapper>
+          <AppContent />
+        </TrackingWrapper>
+      </Router>
+    </HelmetProvider>
   );
 }
 
