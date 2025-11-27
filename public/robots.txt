@@ -1,0 +1,22 @@
+# Robots.txt for Abhigyan Gurukul
+# Allow all crawlers to index all pages
+
+User-agent: *
+Allow: /
+
+# Priority pages for scholarship-related searches
+Allow: /admissions
+Allow: /enrollnow
+Allow: /courses
+
+# Sitemap location
+Sitemap: https://abhigyan-gurukul.com/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Block admin and dashboard areas
+Disallow: /dashboard
+Disallow: /adminlogin
+Disallow: /student-dashboard
+Disallow: /marketing-hub

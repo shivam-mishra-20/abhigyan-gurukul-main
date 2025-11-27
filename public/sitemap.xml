@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Admissions Page - High Priority for Scholarship Searches -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/admissions</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <news:news>
+      <news:publication>
+        <news:name>Abhigyan Gurukul</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2025-11-27</news:publication_date>
+      <news:title>Scholarship Test Abhigyan Gurukul 2026 - Admissions Open</news:title>
+      <news:keywords>scholarship test abhigyan gurukul, abhigyan gurukul scholarship, admissions 2026, merit scholarship</news:keywords>
+    </news:news>
+  </url>
+
+  <!-- Enrollment Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/enrollnow</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Courses Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/courses</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/about</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Faculties Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/faculties</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Events Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/events</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Login Page -->
+  <url>
+    <loc>https://abhigyan-gurukul.com/login</loc>
+    <lastmod>2025-11-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>
