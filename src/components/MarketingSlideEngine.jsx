@@ -19,14 +19,38 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import "../styles/MarketingSlideEngine.css";
+import FacultyCard from "./FacultyCard";
+import FacultyModal from "./FacultyModal";
 
 const MarketingSlideEngine = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [detailView, setDetailView] = useState(null);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const slideRef = useRef(null);
+
+  // Generate faculty slides dynamically - 2 faculty members per slide
+  const facultySlides = Array.from(
+    { length: Math.ceil(facultyMembers.length / 2) },
+    (_, i) => {
+      const slideData = facultyMembers.slice(i * 2, i * 2 + 2);
+      console.log(
+        `Faculty Slide ${i + 1}:`,
+        slideData.map((f) => f.name)
+      );
+      return {
+        id: `faculties-${i}`,
+        type: "faculties",
+        title: "Meet Our Expert Faculty",
+        subtitle: `Part ${i + 1} of ${Math.ceil(facultyMembers.length / 2)}`,
+        icon: <FaUsers className="text-5xl" />,
+        gradient: "from-emerald-600 to-green-500",
+        data: slideData,
+      };
+    }
+  );
 
   const marketingSlides = [
     {
@@ -35,7 +59,13 @@ const MarketingSlideEngine = () => {
       title: "Welcome to Abhigyan Gurukul",
       subtitle: "Excellence in Education",
       description: "Transform your academic journey with us",
-      icon: <FaGraduationCap className="text-6xl" />,
+      icon: (
+        <img
+          src="/ABHIGYAN_GURUKUL_logo.png"
+          alt="Abhigyan Gurukul"
+          className="w-48 h-48 object-contain"
+        />
+      ),
       gradient: "from-emerald-500 to-green-600",
     },
     {
@@ -78,15 +108,8 @@ const MarketingSlideEngine = () => {
         },
       ],
     },
-    {
-      id: "faculties",
-      type: "faculties",
-      title: "Meet Our Expert Faculty",
-      subtitle: "Learn from the Best",
-      icon: <FaUsers className="text-5xl" />,
-      gradient: "from-emerald-600 to-green-500",
-      data: facultyMembers.slice(0, 6),
-    },
+    // Insert faculty slides
+    ...facultySlides,
     {
       id: "fees",
       type: "fees",
@@ -235,16 +258,17 @@ const MarketingSlideEngine = () => {
         return (
           <div className="flex flex-col items-center justify-center h-full text-white">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mb-8"
             >
               {slide.icon}
             </motion.div>
             <motion.h1
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
               className="text-5xl font-bold mt-6 text-center"
             >
               {slide.title}
@@ -252,7 +276,7 @@ const MarketingSlideEngine = () => {
             <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
               className="text-2xl mt-4 text-center opacity-90"
             >
               {slide.subtitle}
@@ -260,7 +284,7 @@ const MarketingSlideEngine = () => {
             <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
               className="text-lg mt-2 text-center opacity-75"
             >
               {slide.description}
@@ -308,45 +332,29 @@ const MarketingSlideEngine = () => {
 
       case "faculties":
         return (
-          <div
-            className="h-full text-white overflow-y-auto cursor-pointer"
-            onClick={() => openDetailView(slide.id)}
-          >
-            <div className="text-center mb-8">
+          <div className="h-full text-white overflow-y-auto">
+            <div className="text-center mb-12">
               <div className="flex justify-center mb-4">{slide.icon}</div>
               <h2 className="text-4xl font-bold">{slide.title}</h2>
               <p className="text-xl mt-2 opacity-90">{slide.subtitle}</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 px-6">
+            <div className="flex justify-center items-center gap-8 px-12 h-[400px]">
               {slide.data.map((faculty, idx) => (
-                <motion.div
+                <FacultyCard
                   key={faculty.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all"
-                >
-                  <div className="w-24 h-24 mx-auto mb-3 rounded-full overflow-hidden border-4 border-white/50">
-                    <img
-                      src={faculty.image}
-                      alt={faculty.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-bold text-center text-lg">
-                    {faculty.name}
-                  </h3>
-                  <p className="text-sm text-center opacity-75">
-                    {faculty.subject}
-                  </p>
-                  <p className="text-xs text-center mt-1 opacity-60">
-                    {faculty.experience}
-                  </p>
-                </motion.div>
+                  faculty={faculty}
+                  index={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Faculty clicked:", faculty.name);
+                    setSelectedFaculty(faculty);
+                    setIsAutoScrolling(false);
+                  }}
+                />
               ))}
             </div>
-            <p className="text-center mt-6 text-sm opacity-75">
-              Click to view all faculty members
+            <p className="text-center mt-8 text-sm opacity-75">
+              Click on any faculty to view their complete profile
             </p>
           </div>
         );
@@ -517,48 +525,6 @@ const MarketingSlideEngine = () => {
                     <div className="text-5xl mb-4">{item.icon}</div>
                     <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
                     <p className="text-lg opacity-90">{item.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {slide.type === "faculties" && (
-            <div className="text-white">
-              <h2 className="text-5xl font-bold text-center mb-8">
-                Our Complete Faculty Team
-              </h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                {facultyMembers.map((faculty, idx) => (
-                  <motion.div
-                    key={faculty.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-white/20 backdrop-blur-md rounded-2xl p-6 hover:bg-white/30 transition-all"
-                  >
-                    <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/50">
-                      <img
-                        src={faculty.image}
-                        alt={faculty.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-center">
-                      {faculty.name}
-                    </h3>
-                    <p className="text-center opacity-90 mt-1">
-                      {faculty.subject}
-                    </p>
-                    <p className="text-center text-sm opacity-75 mt-1">
-                      {faculty.experience}
-                    </p>
-                    <p className="text-center text-sm mt-2 opacity-80">
-                      {faculty.education}
-                    </p>
-                    <p className="text-center text-sm mt-2 italic">
-                      {faculty.specialty}
-                    </p>
                   </motion.div>
                 ))}
               </div>
@@ -765,10 +731,10 @@ const MarketingSlideEngine = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-            initial={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
             className={`absolute inset-0 bg-gradient-to-br ${marketingSlides[currentSlide].gradient} p-8`}
           >
             {renderSlideContent(marketingSlides[currentSlide])}
@@ -841,6 +807,19 @@ const MarketingSlideEngine = () => {
 
       {/* Detail View Modal */}
       <AnimatePresence>{detailView && renderDetailView()}</AnimatePresence>
+
+      {/* Individual Faculty Modal */}
+      <AnimatePresence>
+        {selectedFaculty && (
+          <FacultyModal
+            faculty={selectedFaculty}
+            onClose={() => {
+              setSelectedFaculty(null);
+              setIsAutoScrolling(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

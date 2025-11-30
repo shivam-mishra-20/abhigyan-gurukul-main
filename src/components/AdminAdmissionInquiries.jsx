@@ -154,6 +154,8 @@ const AdminAdmissionInquiries = () => {
       "DOB",
       "Seeking Class",
       "School Name",
+      "Scholarship Test Class",
+      "Scholarship Test Date",
       "Previous Result",
       "Math Marks",
       "Science Marks",
@@ -182,6 +184,8 @@ const AdminAdmissionInquiries = () => {
       inquiry.dateOfBirth,
       inquiry.seekingAdmissionClass,
       inquiry.schoolName,
+      inquiry.scholarshipTestClass || "",
+      inquiry.scholarshipTestDate || "",
       inquiry.previousExamResult || "",
       `${inquiry.mathMarks || ""} / ${inquiry.mathOutOf || ""}`,
       `${inquiry.scienceMarks || ""} / ${inquiry.scienceOutOf || ""}`,
@@ -641,6 +645,26 @@ const AdminAdmissionInquiries = () => {
                         {selectedInquiry.schoolName}
                       </p>
                     </div>
+                    {selectedInquiry.scholarshipTestClass && (
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Scholarship Test Class
+                        </p>
+                        <p className="text-gray-800 font-semibold">
+                          {selectedInquiry.scholarshipTestClass}
+                        </p>
+                      </div>
+                    )}
+                    {selectedInquiry.scholarshipTestDate && (
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Scholarship Test Date
+                        </p>
+                        <p className="text-gray-800 font-semibold">
+                          {selectedInquiry.scholarshipTestDate}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm text-gray-500">
                         Previous Exam Result

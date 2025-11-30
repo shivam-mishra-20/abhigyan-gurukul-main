@@ -21,6 +21,8 @@ const AdmissionInquiryForm = () => {
     dateOfBirth: "",
     seekingAdmissionClass: "",
     schoolName: "",
+    scholarshipTestClass: "",
+    scholarshipTestDate: "",
     previousExamResult: "",
     mathMarks: "",
     mathOutOf: "",
@@ -146,6 +148,8 @@ const AdmissionInquiryForm = () => {
           dateOfBirth: "",
           seekingAdmissionClass: "",
           schoolName: "",
+          scholarshipTestClass: "",
+          scholarshipTestDate: "",
           previousExamResult: "",
           mathMarks: "",
           mathOutOf: "",
@@ -455,6 +459,68 @@ const AdmissionInquiryForm = () => {
                           {errors.schoolName}
                         </p>
                       )}
+                    </div>
+
+                    {/* Scholarship Test Class */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Scholarship Test for Class
+                      </label>
+                      <select
+                        name="scholarshipTestClass"
+                        value={formData.scholarshipTestClass}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      >
+                        <option value="">Select Class (Optional)</option>
+                        <option value="Class 6">Class 6</option>
+                        <option value="Class 7">Class 7</option>
+                        <option value="Class 8">Class 8</option>
+                        <option value="Class 9">Class 9</option>
+                        <option value="Class 10">Class 10</option>
+                        <option value="Class 11">Class 11</option>
+                        <option value="Class 12">Class 12</option>
+                      </select>
+                    </div>
+
+                    {/* Scholarship Test Date */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Scholarship Test Date
+                      </label>
+                      <div className="relative">
+                        <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <select
+                          name="scholarshipTestDate"
+                          value={formData.scholarshipTestDate}
+                          onChange={handleChange}
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none"
+                        >
+                          <option value="">Select Test Date (Optional)</option>
+                          <option value="7th December 2025">
+                            7th December 2025 - 10% Early Bird Discount ⭐
+                          </option>
+                          <option value="14th December 2025">
+                            14th December 2025 - 9% Early Bird Discount
+                          </option>
+                          <option value="21st December 2025">
+                            21st December 2025 - 8% Early Bird Discount
+                          </option>
+                          <option value="28th December 2025">
+                            28th December 2025 - 7% Early Bird Discount (Current
+                            Students)
+                          </option>
+                          <option value="4th January 2026">
+                            4th January 2026 - 6% Early Bird Discount
+                          </option>
+                          <option value="11th January 2026">
+                            11th January 2026 - 5% Early Bird Discount
+                          </option>
+                        </select>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Test timing: 10:00 AM - 1:00 PM (arrive 30 min early)
+                      </p>
                     </div>
 
                     {/* Result in previous exam */}

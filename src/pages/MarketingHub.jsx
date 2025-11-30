@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
 import { facultyMembers } from "../data/facultyData";
+
 import {
   FaGraduationCap,
   FaChalkboardTeacher,
@@ -19,17 +20,40 @@ import {
   FaCheckCircle,
   FaUsers,
   FaHome,
+  FaRocket,
+  FaFlask,
+  FaMedal,
+  FaLightbulb,
+  FaGlobe,
+  FaChartLine,
 } from "react-icons/fa";
 import "../styles/MarketingSlideEngine.css";
+import FacultyCard from "../components/FacultyCard";
+import FacultyModal from "../components/FacultyModal";
 
 const MarketingHub = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [detailView, setDetailView] = useState(null);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const slideRef = useRef(null);
+
+  // Generate faculty slides - 2 faculty members per slide
+  const facultySlides = Array.from(
+    { length: Math.ceil(facultyMembers.length / 2) },
+    (_, i) => ({
+      id: `faculties-${i}`,
+      type: "faculties",
+      title: "Meet Our Expert Faculty",
+      subtitle: `Part ${i + 1} of ${Math.ceil(facultyMembers.length / 2)}`,
+      icon: <FaUsers className="text-5xl" />,
+      bgColor: "bg-white",
+      data: facultyMembers.slice(i * 2, i * 2 + 2),
+    })
+  );
 
   const marketingSlides = [
     {
@@ -38,8 +62,22 @@ const MarketingHub = () => {
       title: "Welcome to Abhigyan Gurukul",
       subtitle: "Excellence in Education",
       description: "Transform your academic journey with us",
-      icon: <FaGraduationCap className="text-6xl" />,
+      icon: (
+        <img
+          src="/ABHIGYAN_GURUKUL_logo.png"
+          alt="Abhigyan Gurukul"
+          className="w-48 h-48 object-contain"
+        />
+      ),
       bgColor: "bg-white",
+    },
+    {
+      id: "introduction",
+      type: "introduction",
+      title: "Our Vision & Mission",
+      subtitle: "Building Future Leaders",
+      icon: <FaRocket className="text-5xl" />,
+      bgColor: "bg-gradient-to-br from-green-50 via-emerald-50 to-green-100",
     },
     {
       id: "features",
@@ -81,15 +119,8 @@ const MarketingHub = () => {
         },
       ],
     },
-    {
-      id: "faculties",
-      type: "faculties",
-      title: "Meet Our Expert Faculty",
-      subtitle: "Learn from the Best",
-      icon: <FaUsers className="text-5xl" />,
-      bgColor: "bg-white",
-      data: facultyMembers.slice(0, 6),
-    },
+    // Insert faculty slides
+    ...facultySlides,
     {
       id: "fees",
       type: "fees",
@@ -171,7 +202,7 @@ const MarketingHub = () => {
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % marketingSlides.length);
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [isAutoScrolling, detailView, marketingSlides.length]);
@@ -276,6 +307,201 @@ const MarketingHub = () => {
           </div>
         );
 
+      case "introduction":
+        return (
+          <div className="h-full flex flex-col justify-center px-4 md:px-8 py-6">
+            {/* Header - Compact */}
+            <div className="text-center mb-4">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, type: "spring" }}
+                className="flex justify-center mb-2 text-green-600"
+              >
+                {slide.icon}
+              </motion.div>
+              <motion.h2
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-3xl md:text-4xl font-bold text-gray-800"
+              >
+                {slide.title}
+              </motion.h2>
+              <motion.p
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-lg md:text-xl mt-1 text-green-600 font-semibold"
+              >
+                {slide.subtitle}
+              </motion.p>
+            </div>
+            {/* Emotional Impact - Two Column Layout */}
+            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
+              {/* LEFT SECTION - Headline & Transformation */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col justify-center"
+              >
+                {/* Main Headline */}
+                <div className="mb-3">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2 leading-tight">
+                    Your Child&apos;s Dreams Deserve More
+                    <span className="block text-green-600 mt-1">
+                      Than Just Coaching
+                    </span>
+                  </h2>
+                  <p className="text-lg md:text-xl text-gray-600 font-medium">
+                    We Build Futures, Not Just Grades
+                  </p>
+                </div>
+
+                {/* Before - Struggling Student */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-3 border-2 border-gray-300 mb-2"
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="bg-gray-600 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                      Before
+                    </div>
+                    <FaUserGraduate className="text-2xl text-gray-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-700 mb-1.5">
+                    Struggling Student
+                  </h3>
+                  <ul className="space-y-1 text-gray-600 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-0.5">✗</span>
+                      <span>Confused & Overwhelmed</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-0.5">✗</span>
+                      <span>Lack of Proper Guidance</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-0.5">✗</span>
+                      <span>Fear of Competitive Exams</span>
+                    </li>
+                  </ul>
+                </motion.div>
+
+                {/* After - Confident Achiever */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-3 border-2 border-green-400 shadow-lg"
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="bg-green-600 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                      After
+                    </div>
+                    <FaTrophy className="text-2xl text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-green-800 mb-1.5">
+                    Confident Achiever
+                  </h3>
+                  <ul className="space-y-1 text-green-800 text-sm">
+                    <li className="flex items-start gap-2">
+                      <FaCheckCircle className="text-green-600 mt-0.5 flex-shrink-0" />
+                      <span>Clear Goals & Strategy</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <FaCheckCircle className="text-green-600 mt-0.5 flex-shrink-0" />
+                      <span>Expert Personal Mentorship</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <FaCheckCircle className="text-green-600 mt-0.5 flex-shrink-0" />
+                      <span>Consistent Top Performance</span>
+                    </li>
+                  </ul>
+                </motion.div>
+              </motion.div>
+
+              {/* RIGHT SECTION - Success Proof & Testimonial */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-col justify-center"
+              >
+                {/* Success Numbers */}
+                <div className="mb-2">
+                  <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">
+                    Our Success Speaks
+                  </h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="bg-white rounded-xl p-3 text-center border-2 border-green-200 shadow-md"
+                    >
+                      <div className="text-3xl md:text-4xl font-bold text-green-600 mb-1">
+                        95%
+                      </div>
+                      <div className="text-sm md:text-base text-gray-600 font-medium">
+                        Success Rate
+                      </div>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8 }}
+                      className="bg-white rounded-xl p-3 text-center border-2 border-green-200 shadow-md"
+                    >
+                      <div className="text-3xl md:text-4xl font-bold text-green-600 mb-1">
+                        500+
+                      </div>
+                      <div className="text-sm md:text-base text-gray-600 font-medium">
+                        IIT/NEET Selections
+                      </div>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.9 }}
+                      className="bg-white rounded-xl p-3 text-center border-2 border-green-200 shadow-md"
+                    >
+                      <div className="text-3xl md:text-4xl font-bold text-green-600 mb-1">
+                        10,000+
+                      </div>
+                      <div className="text-sm md:text-base text-gray-600 font-medium">
+                        Success Stories
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Testimonial */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.0 }}
+                  className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-3 border border-green-200"
+                >
+                  <div className="text-center">
+                    <div className="text-green-600 text-3xl mb-1">&ldquo;</div>
+                    <p className="text-sm md:text-base text-gray-700 italic font-medium mb-1.5 leading-relaxed">
+                      They didn&apos;t just teach my son, they believed in him
+                      when he didn&apos;t believe in himself
+                    </p>
+                    <p className="text-xs text-gray-600 font-semibold">
+                      — Parent of JEE Advanced 2024 Qualifier
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
+          </div>
+        );
+
       case "features":
         return (
           <div
@@ -326,12 +552,8 @@ const MarketingHub = () => {
 
       case "faculties":
         return (
-          <div
-            className="h-full overflow-y-auto cursor-pointer px-4 md:px-8"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            onClick={() => openDetailView(slide.id)}
-          >
-            <div className="text-center mb-8 pt-8">
+          <div className="h-full flex flex-col justify-center px-4 md:px-8">
+            <div className="text-center mb-12">
               <div className="flex justify-center mb-4 text-green-600">
                 {slide.icon}
               </div>
@@ -342,36 +564,49 @@ const MarketingHub = () => {
                 {slide.subtitle}
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto pb-8">
+            <div className="flex justify-center items-center gap-8 px-4 md:px-12">
               {slide.data.map((faculty, idx) => (
-                <motion.div
+                <div
                   key={faculty.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bg-white border-2 border-green-100 rounded-2xl p-4 md:p-6 hover:border-green-400 hover:shadow-xl transition-all shadow-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedFaculty(faculty);
+                    setIsAutoScrolling(false);
+                  }}
+                  className="bg-white border-2 border-green-100 rounded-2xl p-6 md:p-8 hover:border-green-400 hover:shadow-xl transition-all shadow-md cursor-pointer hover:scale-105 transform w-full max-w-sm"
                 >
-                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3 rounded-full overflow-hidden border-4 border-green-200">
-                    <img
-                      src={faculty.image}
-                      alt={faculty.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-bold text-center text-base md:text-lg text-gray-800">
-                    {faculty.name}
-                  </h3>
-                  <p className="text-sm text-center text-green-600 font-medium">
-                    {faculty.subject}
-                  </p>
-                  <p className="text-xs text-center mt-1 text-gray-500">
-                    {faculty.experience}
-                  </p>
-                </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.2, duration: 0.4 }}
+                  >
+                    <div className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-green-200">
+                      <img
+                        src={faculty.image}
+                        alt={faculty.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="font-bold text-center text-xl md:text-2xl text-gray-800 mb-2">
+                      {faculty.name}
+                    </h3>
+                    <p className="text-base md:text-lg text-center text-green-600 font-medium">
+                      {faculty.subject}
+                    </p>
+                    <p className="text-sm text-center mt-2 text-gray-500">
+                      {faculty.experience}
+                    </p>
+                    <div className="mt-4 text-center">
+                      <button className="px-6 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-full text-sm font-semibold transition-all">
+                        View Details
+                      </button>
+                    </div>
+                  </motion.div>
+                </div>
               ))}
             </div>
-            <p className="text-center pb-6 text-sm text-gray-500">
-              Click to view all faculty members
+            <p className="text-center mt-8 text-sm text-gray-500">
+              Click on any faculty to view their complete profile
             </p>
           </div>
         );
@@ -567,48 +802,6 @@ const MarketingHub = () => {
             </div>
           )}
 
-          {slide.type === "faculties" && (
-            <div className="text-white">
-              <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">
-                Our Complete Faculty Team
-              </h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                {facultyMembers.map((faculty, idx) => (
-                  <motion.div
-                    key={faculty.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-white/20 backdrop-blur-md rounded-2xl p-6 hover:bg-white/30 transition-all"
-                  >
-                    <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/50">
-                      <img
-                        src={faculty.image}
-                        alt={faculty.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold text-center">
-                      {faculty.name}
-                    </h3>
-                    <p className="text-center opacity-90 mt-1">
-                      {faculty.subject}
-                    </p>
-                    <p className="text-center text-sm opacity-75 mt-1">
-                      {faculty.experience}
-                    </p>
-                    <p className="text-center text-sm mt-2 opacity-80">
-                      {faculty.education}
-                    </p>
-                    <p className="text-center text-sm mt-2 italic">
-                      {faculty.specialty}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {slide.type === "fees" && (
             <div className="text-white">
               <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">
@@ -749,6 +942,19 @@ const MarketingHub = () => {
 
       {/* Detail View Modal */}
       <AnimatePresence>{detailView && renderDetailView()}</AnimatePresence>
+
+      {/* Individual Faculty Modal */}
+      <AnimatePresence>
+        {selectedFaculty && (
+          <FacultyModal
+            faculty={selectedFaculty}
+            onClose={() => {
+              setSelectedFaculty(null);
+              setIsAutoScrolling(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
