@@ -26,6 +26,7 @@ import {
   FaGraduationCap,
   FaMapMarkerAlt,
   FaCalendarAlt,
+  FaWhatsapp,
 } from "react-icons/fa";
 
 const AdminAdmissionInquiries = () => {
@@ -38,6 +39,86 @@ const AdminAdmissionInquiries = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState({});
+
+  // Scholarship Test Venue Details
+  const SCHOLARSHIP_VENUE = {
+    name: "Abhigyan Gurukul",
+    address:
+      "SF-32, Akshar Pavilion A1, Vasna Bhayli main Rd, Vadodara, Gujarat 391410",
+    time: "10:00 AM to 1:00 PM",
+    contactNo: "+91 9829491219",
+  };
+
+  // Function to send WhatsApp confirmation message
+  const sendWhatsAppConfirmation = (inquiry) => {
+    const phoneNumber = inquiry.fatherContactNo || inquiry.motherContactNo;
+
+    if (!phoneNumber) {
+      alert("No contact number available to send WhatsApp message.");
+      return;
+    }
+
+    // Clean the phone number (remove spaces, dashes, etc.)
+    let cleanedPhone = phoneNumber.replace(/[\s\-()]/g, "");
+
+    // Add country code if not present (assuming India +91)
+    if (!cleanedPhone.startsWith("+")) {
+      if (cleanedPhone.startsWith("91") && cleanedPhone.length === 12) {
+        cleanedPhone = "+" + cleanedPhone;
+      } else if (cleanedPhone.length === 10) {
+        cleanedPhone = "+91" + cleanedPhone;
+      }
+    }
+
+    // Compose formal WhatsApp message
+    const message = `Dear Parent/Guardian,
+
+Greetings from *Abhigyan Gurukul*!
+
+We are pleased to inform you that the admission inquiry for *${
+      inquiry.studentName
+    }* has been *approved*.
+
+We cordially invite you to appear for the Scholarship Test. Please find the details below:
+
+ *SCHOLARSHIP TEST DETAILS*
+━━━━━━━━━━━━━━━━━━━━━━━━
+ *Date:* ${inquiry.scholarshipTestDate}
+ *Time:* ${SCHOLARSHIP_VENUE.time}
+ *Venue:* ${SCHOLARSHIP_VENUE.name}
+ *Address:* ${SCHOLARSHIP_VENUE.address}
+
+ *Student Details:*
+• Name: ${inquiry.studentName}
+• Class Applied: ${inquiry.seekingAdmissionClass}
+• Scholarship Test Class: ${
+      inquiry.scholarshipTestClass || inquiry.seekingAdmissionClass
+    }
+
+ *Important Instructions:*
+1. Please arrive 15 minutes before the scheduled time.
+2. Carry a valid ID proof and a recent passport-size photograph.
+3. Bring your own stationery (pen, pencil, eraser, etc.).
+
+
+For any queries, please contact us at:
+ ${SCHOLARSHIP_VENUE.contactNo}
+
+We look forward to welcoming ${inquiry.studentName} at Abhigyan Gurukul.
+
+Best Regards,
+*Abhigyan Gurukul*
+_Tree of Knowledge_`;
+
+    // Create WhatsApp URL
+    const whatsappURL = `https://wa.me/${cleanedPhone.replace(
+      "+",
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+
+    // Open WhatsApp in a new tab
+    window.open(whatsappURL, "_blank");
+  };
 
   useEffect(() => {
     fetchInquiries();
@@ -117,7 +198,40 @@ const AdminAdmissionInquiries = () => {
       await updateDoc(doc(db, "admissionInquiries", id), {
         status: newStatus,
       });
+
+      // If approved, send WhatsApp confirmation
+      if (newStatus === "approved" && selectedInquiry) {
+        const shouldSendWhatsApp = window.confirm(
+          "Status updated to Approved! Would you like to send a WhatsApp confirmation message to the parent?"
+        );
+        if (shouldSendWhatsApp) {
+          sendWhatsAppConfirmation(selectedInquiry);
+        }
+      }
+
       fetchInquiries();
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Failed to update status");
+    }
+  };
+
+  // Function to handle approval with WhatsApp message from modal
+  const handleApproveWithWhatsApp = async () => {
+    if (!selectedInquiry) return;
+
+    try {
+      await updateDoc(doc(db, "admissionInquiries", selectedInquiry.id), {
+        status: "approved",
+      });
+
+      // Send WhatsApp confirmation
+      sendWhatsAppConfirmation(selectedInquiry);
+
+      fetchInquiries();
+
+      // Update selectedInquiry state
+      setSelectedInquiry({ ...selectedInquiry, status: "approved" });
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Failed to update status");
@@ -582,12 +696,12 @@ const AdminAdmissionInquiries = () => {
                       <FaClock /> <span>Pending</span>
                     </button>
                     <button
-                      onClick={() =>
-                        handleUpdateStatus(selectedInquiry.id, "approved")
-                      }
+                      onClick={handleApproveWithWhatsApp}
                       className="flex-1 min-w-[120px] px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                      title="Approve and send WhatsApp confirmation"
                     >
-                      <FaCheckCircle /> <span>Approve</span>
+                      <FaCheckCircle /> <span>Approve</span>{" "}
+                      <FaWhatsapp className="ml-1" />
                     </button>
                     <button
                       onClick={() =>
@@ -598,6 +712,11 @@ const AdminAdmissionInquiries = () => {
                       <FaTimesCircle /> <span>Reject</span>
                     </button>
                   </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    <FaWhatsapp className="inline mr-1 text-green-500" />
+                    Clicking &#34;Approve&#34; button will send a WhatsApp
+                    confirmation with scholarship test details
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

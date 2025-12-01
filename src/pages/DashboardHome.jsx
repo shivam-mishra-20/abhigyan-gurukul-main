@@ -82,6 +82,14 @@ const DashboardHome = ({ name }) => {
 
   const adminCards = [
     {
+      icon: <FaRocket className="text-3xl" />,
+      title: "Marketing Hub",
+      description: "Discover features, faculty, fees & enroll",
+      bg: "bg-gradient-to-br from-green-50 to-green-100 text-green-800",
+      route: "/marketing-hub",
+      highlight: true,
+    },
+    {
       icon: <FaUsers className="text-3xl" />,
       title: "Manage Users",
       description: "Add, edit, delete users",
@@ -464,38 +472,6 @@ const DashboardHome = ({ name }) => {
       transition={{ duration: 0.5 }}
     >
       {isMobile ? renderMobileWelcome() : renderDesktopWelcome()}
-
-      {/* Marketing Hub Button */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className={isMobile ? "my-4" : "my-6"}
-      >
-        <motion.button
-          onClick={() => navigate("/marketing-hub")}
-          whileHover={{ scale: 1.02, y: -2 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-2xl shadow-2xl hover:shadow-green-500/50 transition-all p-6 md:p-8"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full">
-                <FaRocket className="text-3xl md:text-4xl" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-2xl md:text-3xl font-bold mb-1">
-                  Explore Marketing Hub
-                </h3>
-                <p className="text-sm md:text-base opacity-90">
-                  Discover our features, faculty, fees & enroll now!
-                </p>
-              </div>
-            </div>
-            <div className="hidden md:block text-4xl opacity-75">→</div>
-          </div>
-        </motion.button>
-      </motion.div>
 
       {isMobile ? renderMobileCards() : renderDesktopCards()}
 

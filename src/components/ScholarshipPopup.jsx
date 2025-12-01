@@ -348,6 +348,67 @@ const ScholarshipPopup = () => {
                 </div>
               </motion.div>
 
+              {/* Premium Features Highlight */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.65 }}
+                className="mb-6"
+              >
+                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                  <span className="text-2xl mr-2">✨</span>
+                  Premium Features
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* 1:1 Mentoring Highlight */}
+                  <div className="relative bg-gradient-to-br from-pink-100 via-pink-50 to-white rounded-xl p-5 border-4 border-pink-300 shadow-xl">
+                    <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full shadow-lg text-xs font-black animate-pulse">
+                      ⭐ PREMIUM
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white p-3 rounded-xl text-3xl shadow-lg">
+                        👨‍🏫
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-base font-bold text-pink-900 mb-2 flex items-center gap-2">
+                          1:1 Mentoring
+                          <span className="text-lg">✨</span>
+                        </h4>
+                        <p className="text-sm text-pink-800 font-semibold leading-relaxed">
+                          Personalized guidance from experienced faculty with
+                          individual attention for focused learning
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Limited Batch Size Highlight */}
+                  <div className="relative bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl p-5 border-4 border-orange-300 shadow-xl">
+                    <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-full shadow-lg text-xs font-black animate-pulse">
+                      ⭐ PREMIUM
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-3 rounded-xl text-3xl shadow-lg">
+                        🎯
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-base font-bold text-orange-900 mb-2 flex items-center gap-2">
+                          Limited Batch Size
+                          <span className="text-lg">✨</span>
+                        </h4>
+                        <p className="text-sm text-orange-800 font-semibold leading-relaxed">
+                          Exclusive batches of{" "}
+                          <span className="text-orange-600 font-black text-base">
+                            15-18 students
+                          </span>{" "}
+                          ensuring optimal teacher-student ratio
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
               {/* Scholarship Benefits */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
