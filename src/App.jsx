@@ -10,7 +10,8 @@ import {
 } from "react-router";
 import { useMediaQuery } from "react-responsive";
 import { useEffect } from "react";
-import { HelmetProvider } from "react-helmet-async";
+// removed react-helmet-async dependency; using local SEO helper
+import SEO from "./components/SEO";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingLeaderboardButton from "./components/FloatingLeaderboardButton";
@@ -120,13 +121,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <HelmetProvider>
+    <>
       <Router>
         <TrackingWrapper>
           <AppContent />
         </TrackingWrapper>
       </Router>
-    </HelmetProvider>
+    </>
   );
 }
 
