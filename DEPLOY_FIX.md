@@ -3,12 +3,14 @@ What I changed to fix the Vercel/npm peer-dependency build error
 - Problem: `react-helmet-async@2.0.5` required a peer of React up to v18 (peer: `^16.6.0 || ^17.0.0 || ^18.0.0`). The project (and some transitive deps) were resolving React 19, which caused npm to fail the dependency resolution during deploy.
 
 - Fix applied:
+
   - Removed `react-helmet-async` from `package.json`.
   - Added a small, dependency-free `SEO` component at `src/components/SEO.jsx` that injects title/meta/link/script tags into `document.head` via `useEffect`.
   - Replaced `HelmetProvider` usage in `src/App.jsx` and `Helmet` usage in `src/pages/Admissions.jsx` with the new `SEO` component.
   - Updated `react` and `react-dom` entries in `package.json` to `^18.2.0` earlier while exploring; however the current install resolved packages cleanly after removing `react-helmet-async`.
 
 - Why this is safe:
+
   - `react-helmet-async` is only used to set document head metadata. The custom `SEO` component covers the same needs without introducing a peer dependency mismatch.
   - The new component is simple and contained — it only manipulates `document.head` and cleans up script nodes on unmount.
 

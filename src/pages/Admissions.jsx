@@ -287,20 +287,53 @@ const Admissions = () => {
   return (
     <div className="bg-gray-50">
       <SEO
-        title={"Scholarship Test Abhigyan Gurukul 2026 | Admissions | Up to 30% OFF"}
+        title={
+          "Scholarship Test Abhigyan Gurukul 2026 | Admissions | Up to 30% OFF"
+        }
         metas={[
-          { name: "description", content: "Scholarship Test Abhigyan Gurukul 2026-27: Get UP TO 30% scholarship + 10% Early Bird Discount. ₹50 Lakh merit-based scholarship pool. Admission open for grades 6-12. Register now for scholarship test cum admission Dec 7, 2025 to Jan 11, 2026. Limited 217 seats." },
-          { name: "keywords", content: "scholarship test abhigyan gurukul, abhigyan gurukul scholarship, scholarship abhigyan, abhigyan gurukul admissions 2026, merit scholarship test, school scholarship exam, ₹50 lakh scholarship pool, scholarship test cum admission, early bird scholarship discount, merit based scholarship India" },
+          {
+            name: "description",
+            content:
+              "Scholarship Test Abhigyan Gurukul 2026-27: Get UP TO 30% scholarship + 10% Early Bird Discount. ₹50 Lakh merit-based scholarship pool. Admission open for grades 6-12. Register now for scholarship test cum admission Dec 7, 2025 to Jan 11, 2026. Limited 217 seats.",
+          },
+          {
+            name: "keywords",
+            content:
+              "scholarship test abhigyan gurukul, abhigyan gurukul scholarship, scholarship abhigyan, abhigyan gurukul admissions 2026, merit scholarship test, school scholarship exam, ₹50 lakh scholarship pool, scholarship test cum admission, early bird scholarship discount, merit based scholarship India",
+          },
           { property: "og:type", content: "website" },
-          { property: "og:url", content: "https://abhigyan-gurukul.com/admissions" },
-          { property: "og:title", content: "Scholarship Test Abhigyan Gurukul 2026 | Up to 30% OFF + Early Bird Discount" },
-          { property: "og:description", content: "Scholarship Test Abhigyan Gurukul: Merit-based scholarships up to 30% OFF + 10% Early Bird Discount. ₹50 Lakh scholarship pool for grades 6-12. Register for scholarship test cum admission now!" },
+          {
+            property: "og:url",
+            content: "https://abhigyan-gurukul.com/admissions",
+          },
+          {
+            property: "og:title",
+            content:
+              "Scholarship Test Abhigyan Gurukul 2026 | Up to 30% OFF + Early Bird Discount",
+          },
+          {
+            property: "og:description",
+            content:
+              "Scholarship Test Abhigyan Gurukul: Merit-based scholarships up to 30% OFF + 10% Early Bird Discount. ₹50 Lakh scholarship pool for grades 6-12. Register for scholarship test cum admission now!",
+          },
           { property: "og:site_name", content: "Abhigyan Gurukul" },
           { property: "og:image", content: "/ABHIGYAN_GURUKUL_logo.svg" },
           { name: "twitter:card", content: "summary_large_image" },
-          { name: "twitter:title", content: "Scholarship Test Abhigyan Gurukul 2026 | Up to 30% OFF Scholarship" },
-          { name: "twitter:description", content: "Scholarship Test Abhigyan Gurukul: Get up to 30% scholarship + 10% Early Bird Discount. ₹50L pool. Register now!" },
-          { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+          {
+            name: "twitter:title",
+            content:
+              "Scholarship Test Abhigyan Gurukul 2026 | Up to 30% OFF Scholarship",
+          },
+          {
+            name: "twitter:description",
+            content:
+              "Scholarship Test Abhigyan Gurukul: Get up to 30% scholarship + 10% Early Bird Discount. ₹50L pool. Register now!",
+          },
+          {
+            name: "robots",
+            content:
+              "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+          },
           { name: "googlebot", content: "index, follow" },
           { name: "bingbot", content: "index, follow" },
           { name: "author", content: "Abhigyan Gurukul" },
@@ -308,54 +341,117 @@ const Admissions = () => {
           { name: "geo.region", content: "IN" },
           { name: "geo.placename", content: "Vadodara" },
           { name: "geo.position", content: "25.594095;85.137566" },
-          { name: "ICBM", content: "25.594095, 85.137566" }
+          { name: "ICBM", content: "25.594095, 85.137566" },
         ]}
-        links={[{ rel: "canonical", href: "https://abhigyan-gurukul.com/admissions" }]}
+        links={[
+          { rel: "canonical", href: "https://abhigyan-gurukul.com/admissions" },
+        ]}
         scripts={[
           { type: "application/ld+json", innerHTML: JSON.stringify(faqSchema) },
-          { type: "application/ld+json", innerHTML: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "EducationalOrganization",
-            name: "Abhigyan Gurukul",
-            description: "Premier educational institution offering quality education with merit-based scholarships",
-            url: "https://abhigyan-gurukul.com",
-            logo: "https://abhigyan-gurukul.com/ABHIGYAN_GURUKUL_logo.svg",
-            address: { "@type": "PostalAddress", addressCountry: "IN" }
-          })},
-          { type: "application/ld+json", innerHTML: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://abhigyan-gurukul.com/" },
-              { "@type": "ListItem", position: 2, name: "Admissions", item: "https://abhigyan-gurukul.com/admissions" }
-            ]
-          })},
-          { type: "application/ld+json", innerHTML: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Event",
-            name: "Scholarship Test Abhigyan Gurukul 2026-27 | Merit-Based Admission",
-            alternateName: "Abhigyan Gurukul Scholarship Exam",
-            description: "Scholarship Test Abhigyan Gurukul for grades 6-12. Merit-based scholarship up to 30% OFF on tuition fees + 10% Early Bird Discount. ₹50 Lakh scholarship pool. Test cum admission with 217 limited seats.",
-            startDate: "2025-12-07T10:00:00+05:30",
-            endDate: "2026-01-11T13:00:00+05:30",
-            eventStatus: "https://schema.org/EventScheduled",
-            eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-            location: { "@type": "Place", name: "Abhigyan Gurukul", address: { "@type": "PostalAddress", addressCountry: "IN", addressRegion: "Vadodara" } },
-            organizer: { "@type": "EducationalOrganization", name: "Abhigyan Gurukul", url: "https://abhigyan-gurukul.com", sameAs: "https://abhigyan-gurukul.com/admissions" },
-            offers: { "@type": "Offer", name: "Merit-Based Scholarship - Up to 30% OFF", price: "0", priceCurrency: "INR", availability: "https://schema.org/InStock", url: "https://abhigyan-gurukul.com/admissions", validFrom: "2025-11-27", priceValidUntil: "2026-01-11" },
-            keywords: "scholarship test abhigyan gurukul, abhigyan gurukul scholarship, merit scholarship, admission test, early bird discount"
-          })},
-          { type: "application/ld+json", innerHTML: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "EducationalOccupationalProgram",
-            name: "Abhigyan Gurukul Scholarship Program 2026-27",
-            description: "Merit-based scholarship program offering up to 30% tuition fee discount plus early bird benefits. ₹50 Lakh scholarship pool for deserving students.",
-            provider: { "@type": "EducationalOrganization", name: "Abhigyan Gurukul", url: "https://abhigyan-gurukul.com/admissions" },
-            offers: { "@type": "Offer", category: "Scholarship", priceSpecification: { "@type": "PriceSpecification", price: "5000000", priceCurrency: "INR" } },
-            educationalProgramMode: "OnSite",
-            timeToComplete: "P1Y",
-            numberOfCredits: "Grades 6-12"
-          })}
+          {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "EducationalOrganization",
+              name: "Abhigyan Gurukul",
+              description:
+                "Premier educational institution offering quality education with merit-based scholarships",
+              url: "https://abhigyan-gurukul.com",
+              logo: "https://abhigyan-gurukul.com/ABHIGYAN_GURUKUL_logo.svg",
+              address: { "@type": "PostalAddress", addressCountry: "IN" },
+            }),
+          },
+          {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://abhigyan-gurukul.com/",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Admissions",
+                  item: "https://abhigyan-gurukul.com/admissions",
+                },
+              ],
+            }),
+          },
+          {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Event",
+              name: "Scholarship Test Abhigyan Gurukul 2026-27 | Merit-Based Admission",
+              alternateName: "Abhigyan Gurukul Scholarship Exam",
+              description:
+                "Scholarship Test Abhigyan Gurukul for grades 6-12. Merit-based scholarship up to 30% OFF on tuition fees + 10% Early Bird Discount. ₹50 Lakh scholarship pool. Test cum admission with 217 limited seats.",
+              startDate: "2025-12-07T10:00:00+05:30",
+              endDate: "2026-01-11T13:00:00+05:30",
+              eventStatus: "https://schema.org/EventScheduled",
+              eventAttendanceMode:
+                "https://schema.org/OfflineEventAttendanceMode",
+              location: {
+                "@type": "Place",
+                name: "Abhigyan Gurukul",
+                address: {
+                  "@type": "PostalAddress",
+                  addressCountry: "IN",
+                  addressRegion: "Vadodara",
+                },
+              },
+              organizer: {
+                "@type": "EducationalOrganization",
+                name: "Abhigyan Gurukul",
+                url: "https://abhigyan-gurukul.com",
+                sameAs: "https://abhigyan-gurukul.com/admissions",
+              },
+              offers: {
+                "@type": "Offer",
+                name: "Merit-Based Scholarship - Up to 30% OFF",
+                price: "0",
+                priceCurrency: "INR",
+                availability: "https://schema.org/InStock",
+                url: "https://abhigyan-gurukul.com/admissions",
+                validFrom: "2025-11-27",
+                priceValidUntil: "2026-01-11",
+              },
+              keywords:
+                "scholarship test abhigyan gurukul, abhigyan gurukul scholarship, merit scholarship, admission test, early bird discount",
+            }),
+          },
+          {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "EducationalOccupationalProgram",
+              name: "Abhigyan Gurukul Scholarship Program 2026-27",
+              description:
+                "Merit-based scholarship program offering up to 30% tuition fee discount plus early bird benefits. ₹50 Lakh scholarship pool for deserving students.",
+              provider: {
+                "@type": "EducationalOrganization",
+                name: "Abhigyan Gurukul",
+                url: "https://abhigyan-gurukul.com/admissions",
+              },
+              offers: {
+                "@type": "Offer",
+                category: "Scholarship",
+                priceSpecification: {
+                  "@type": "PriceSpecification",
+                  price: "5000000",
+                  priceCurrency: "INR",
+                },
+              },
+              educationalProgramMode: "OnSite",
+              timeToComplete: "P1Y",
+              numberOfCredits: "Grades 6-12",
+            }),
+          },
         ]}
       />
       {/* Hero Section */}
