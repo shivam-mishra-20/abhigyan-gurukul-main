@@ -37,7 +37,7 @@ import AdminUserManagement from "../components/AdminUserManagement";
 import CreateUserPage from "../components/CreateUserPage";
 import Leaderboards from "./Leaderboards";
 import AdminEvents from "../components/AdminEvents";
-import { notifyAuthStateChange } from "../components/Navbar";
+import { notifyAuthStateChange } from "../utils/authEvents";
 import DevConsole from "../components/DevConsole";
 import SyllabusManager from "../components/SyllabusManager";
 import SyllabusProgress from "../components/SyllabusProgress";

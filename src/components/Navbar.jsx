@@ -1,13 +1,27 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaChevronDown, FaGraduationCap } from "react-icons/fa";
+import { AUTH_STATE_CHANGE_EVENT } from "../utils/authEvents";
 
-// Custom event name for auth state changes
-const AUTH_STATE_CHANGE_EVENT = "authStateChange";
+// Syllabus dropdown data
+const syllabusLinks = [
+  { label: "6th → 7th Grade", path: "/syllabus/class-6-to-7", color: "cyan" },
+  { label: "7th → 8th Grade", path: "/syllabus/class-7-to-8", color: "blue" },
+  { label: "8th → 9th Grade", path: "/syllabus/class-8-to-9", color: "purple" },
+  {
+    label: "9th → 10th Grade",
+    path: "/syllabus/class-9-to-10",
+    color: "orange",
+  },
+  {
+    label: "10th → 11th Grade",
+    path: "/syllabus/class-10-to-11",
+    color: "green",
+  },
+];
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +30,8 @@ const Navbar = () => {
   const { scrollY } = useScroll();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState("");
-
+  const [isAdmissionsHovered, setIsAdmissionsHovered] = useState(false);
+  const [isMobileAdmissionsOpen, setIsMobileAdmissionsOpen] = useState(false);
   // Function to check authentication status
   const checkAuth = () => {
     const authStatus = localStorage.getItem("isAuthenticated") === "true";
@@ -102,7 +117,7 @@ const Navbar = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="hidden lg:flex w-full relative py-7 items-center justify-center bg-gradient-to-r from-[#5ab348] to-[#6BC74C] h-[70px] overflow-hidden shadow-lg z-10"
+        className="hidden lg:flex w-full relative py-7 items-center justify-center bg-gradient-to-r from-[#5ab348] to-[#6BC74C] h-[70px] shadow-lg z-40"
       >
         {/* Background decorative elements */}
         <motion.div
@@ -175,7 +190,7 @@ const Navbar = () => {
         </motion.div>
 
         {/* Navigation Links */}
-        <div className="flex justify  -center items-center gap-4 lg:gap-6 xl:gap-8 font-semibold text-black text-md w-2/3 h-full relative z-10">
+        <div className="flex justify-center items-center gap-4 lg:gap-6 xl:gap-8 font-semibold text-black text-md w-2/3 h-full relative z-10">
           {[
             "Home",
             "About Us",
@@ -186,38 +201,110 @@ const Navbar = () => {
           ].map((text, i) => (
             <motion.div
               key={text}
-              variants={linkVariants}
-              whileHover="hover"
-              whileTap="tap"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 + i * 0.1, duration: 0.5 }}
-              className="text-white text-center px-2 py-2 hover:rounded-xl font-semibold relative"
+              className="relative"
+              onMouseEnter={() =>
+                text === "Admissions" && setIsAdmissionsHovered(true)
+              }
+              onMouseLeave={() =>
+                text === "Admissions" && setIsAdmissionsHovered(false)
+              }
             >
-              <Link
-                to={
-                  text === "Home"
-                    ? "/"
-                    : text === "About Us"
-                    ? "/about"
-                    : text === "Faculties"
-                    ? "/faculties"
-                    : text === "Admissions"
-                    ? "/admissions"
-                    : text === "Courses"
-                    ? "/courses"
-                    : "/events"
-                }
-                className="relative z-10"
-              >
-                {text}
-              </Link>
-              <motion.div
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full"
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.3 }}
-              />
+              {text === "Admissions" ? (
+                // Admissions with dropdown
+                <div className="relative">
+                  <Link
+                    to="/admissions"
+                    className="text-white text-center px-2 py-2 font-semibold flex items-center gap-1 relative group"
+                  >
+                    <span className="relative z-10">{text}</span>
+                    <motion.span
+                      animate={{ rotate: isAdmissionsHovered ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <FaChevronDown className="text-xs" />
+                    </motion.span>
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full origin-left"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: isAdmissionsHovered ? 1 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  </Link>
+
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {isAdmissionsHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-visible z-[100]"
+                      >
+                        {/* Arrow */}
+                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-l border-t border-gray-100"></div>
+
+                        <div className="relative bg-white rounded-xl py-2">
+                          <div className="px-4 py-2 border-b border-gray-100">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                              Syllabus by Grade
+                            </p>
+                          </div>
+
+                          {syllabusLinks.map((item, index) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-200 group"
+                            >
+                              <span
+                                className={`w-2 h-2 rounded-full bg-${item.color}-500 group-hover:scale-125 transition-transform`}
+                              ></span>
+                              <span className="text-sm font-medium group-hover:text-green-700 transition-colors">
+                                {item.label}
+                              </span>
+                            </Link>
+                          ))}
+
+                          <div className="border-t border-gray-100 mt-1 pt-1">
+                            <Link
+                              to="/admissions"
+                              className="flex items-center gap-3 px-4 py-2.5 text-green-600 hover:bg-green-50 transition-all duration-200 font-semibold"
+                            >
+                              <FaGraduationCap className="text-sm" />
+                              <span className="text-sm">
+                                View All Admissions
+                              </span>
+                            </Link>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                // Regular nav links with underline effect
+                <Link
+                  to={
+                    text === "Home"
+                      ? "/"
+                      : text === "About Us"
+                      ? "/about"
+                      : text === "Faculties"
+                      ? "/faculties"
+                      : text === "Courses"
+                      ? "/courses"
+                      : "/events"
+                  }
+                  className="text-white text-center px-2 py-2 font-semibold relative group cursor-pointer"
+                >
+                  <span className="relative z-10">{text}</span>
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                </Link>
+              )}
             </motion.div>
           ))}
         </div>
@@ -397,42 +484,93 @@ const Navbar = () => {
                 />
               </div>
 
-              <div className="flex flex-col items-center gap-4 py-4 font-semibold text-white text-md px-5 relative z-10">
-                {[
-                  "Home",
-                  "About Us",
-                  "Faculties",
-                  "Admissions",
-                  // "Courses",
-                  // "Events",
-                ].map((text, i) => (
-                  <motion.div
-                    key={text}
-                    className="w-full"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <Link
-                      to={
-                        text === "Home"
-                          ? "/"
-                          : text === "About Us"
-                          ? "/about"
-                          : text === "Faculties"
-                          ? "/faculties"
-                          : text === "Admissions"
-                          ? "/admissions"
-                          : text === "Courses"
-                          ? "/courses"
-                          : "/events"
-                      }
-                      className="block py-2 px-4 w-full text-center rounded-lg hover:bg-white hover:bg-opacity-20 transition-all relative z-10"
+              <div className="flex flex-col items-center gap-2 py-4 font-semibold text-white text-md px-5 relative z-10">
+                {["Home", "About Us", "Faculties", "Admissions"].map(
+                  (text, i) => (
+                    <motion.div
+                      key={text}
+                      className="w-full"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
                     >
-                      {text}
-                    </Link>
-                  </motion.div>
-                ))}
+                      {text === "Admissions" ? (
+                        // Admissions with expandable submenu
+                        <div className="w-full">
+                          <button
+                            onClick={() =>
+                              setIsMobileAdmissionsOpen(!isMobileAdmissionsOpen)
+                            }
+                            className="flex items-center justify-center gap-2 py-2 px-4 w-full text-center rounded-lg hover:bg-white hover:bg-opacity-20 transition-all relative z-10"
+                          >
+                            <span>{text}</span>
+                            <motion.span
+                              animate={{
+                                rotate: isMobileAdmissionsOpen ? 180 : 0,
+                              }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <FaChevronDown className="text-xs" />
+                            </motion.span>
+                          </button>
+
+                          <AnimatePresence>
+                            {isMobileAdmissionsOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="bg-white/10 rounded-lg mt-2 py-2 px-2">
+                                  <Link
+                                    to="/admissions"
+                                    className="flex items-center gap-2 py-2 px-3 text-sm rounded-lg hover:bg-white/20 transition-all"
+                                  >
+                                    <FaGraduationCap className="text-yellow-300" />
+                                    <span>All Admissions</span>
+                                  </Link>
+                                  <div className="border-t border-white/20 my-2"></div>
+                                  <p className="text-xs text-white/70 px-3 mb-2">
+                                    Syllabus by Grade
+                                  </p>
+                                  {syllabusLinks.map((item) => (
+                                    <Link
+                                      key={item.path}
+                                      to={item.path}
+                                      className="flex items-center gap-2 py-2 px-3 text-sm rounded-lg hover:bg-white/20 transition-all"
+                                    >
+                                      <span className="w-2 h-2 rounded-full bg-white/60"></span>
+                                      <span>{item.label}</span>
+                                    </Link>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ) : (
+                        <Link
+                          to={
+                            text === "Home"
+                              ? "/"
+                              : text === "About Us"
+                              ? "/about"
+                              : text === "Faculties"
+                              ? "/faculties"
+                              : text === "Courses"
+                              ? "/courses"
+                              : "/events"
+                          }
+                          className="block py-2 px-4 w-full text-center rounded-lg hover:bg-white hover:bg-opacity-20 transition-all relative z-10"
+                        >
+                          {text}
+                        </Link>
+                      )}
+                    </motion.div>
+                  )
+                )}
 
                 {/* Action buttons with enhanced styling */}
                 <motion.button
@@ -485,8 +623,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-// Export the auth event name for other components to use
-export const notifyAuthStateChange = () => {
-  window.dispatchEvent(new Event(AUTH_STATE_CHANGE_EVENT));
-};

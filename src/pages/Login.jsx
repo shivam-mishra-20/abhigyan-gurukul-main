@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router";
 import bcrypt from "bcryptjs";
 import { logEvent } from "../utils/logEvent";
+import { notifyAuthStateChange } from "../utils/authEvents";
 
 const Login = () => {
   const navigate = useNavigate();

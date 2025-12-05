@@ -4,7 +4,7 @@ import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import { motion } from "framer-motion";
-import { notifyAuthStateChange } from "../components/Navbar";
+import { notifyAuthStateChange } from "../utils/authEvents";
 import { logEvent } from "../utils/logEvent";
 
 const StudentLogin = () => {

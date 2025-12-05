@@ -42,6 +42,13 @@ import Events from "./pages/Events";
 import TestManagement from "./pages/TestManagement";
 import MarketingHub from "./pages/MarketingHub";
 
+// Syllabus Pages
+import SyllabusClass6to7 from "./pages/syllabus/SyllabusClass6to7";
+import SyllabusClass7to8 from "./pages/syllabus/SyllabusClass7to8";
+import SyllabusClass8to9 from "./pages/syllabus/SyllabusClass8to9";
+import SyllabusClass9to10 from "./pages/syllabus/SyllabusClass9to10";
+import SyllabusClass10to11 from "./pages/syllabus/SyllabusClass10to11";
+
 // TrackingWrapper component to handle visit tracking on route changes
 const TrackingWrapper = ({ children }) => {
   const location = useLocation();
@@ -79,6 +86,19 @@ const AppContent = () => {
         <Route path="/courses" element={<Courses />} />
         <Route path="/events" element={<Events />} />
         <Route path="/marketing-hub" element={<MarketingHub />} />
+
+        {/* Syllabus Routes */}
+        <Route path="/syllabus/class-6-to-7" element={<SyllabusClass6to7 />} />
+        <Route path="/syllabus/class-7-to-8" element={<SyllabusClass7to8 />} />
+        <Route path="/syllabus/class-8-to-9" element={<SyllabusClass8to9 />} />
+        <Route
+          path="/syllabus/class-9-to-10"
+          element={<SyllabusClass9to10 />}
+        />
+        <Route
+          path="/syllabus/class-10-to-11"
+          element={<SyllabusClass10to11 />}
+        />
 
         {/* Protected student route */}
         <Route

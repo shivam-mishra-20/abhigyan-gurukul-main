@@ -4,7 +4,7 @@ import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router"; // ✅ Step 1: Import useNavigate
-import { notifyAuthStateChange } from "../components/Navbar";
+import { notifyAuthStateChange } from "../utils/authEvents";
 import { logEvent } from "../utils/logEvent";
 
 const StudentRegister = () => {
