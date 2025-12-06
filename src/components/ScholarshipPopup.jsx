@@ -201,13 +201,21 @@ const ScholarshipPopup = () => {
                   ].map((item, idx) => (
                     <motion.div
                       key={idx}
-                      className={`bg-gradient-to-br ${
+                      className={`relative bg-gradient-to-br ${
                         item.highlight
                           ? "from-yellow-50 to-orange-50 border-yellow-400 border-4"
                           : "from-green-50 to-emerald-50 border-green-200 border-2"
                       } p-3 sm:p-4 rounded-2xl hover:shadow-xl transition-all`}
                       whileHover={{ y: -5, scale: 1.02 }}
                     >
+                      {/* Time Badge - Top Right */}
+                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 shadow-md border border-gray-200">
+                        <p className="text-[9px] sm:text-[10px] text-gray-700 font-semibold flex items-center">
+                          <FaClock className="text-green-500 mr-1 text-[10px]" />
+                          10 AM - 1 PM
+                        </p>
+                      </div>
+
                       {item.highlight && (
                         <div className="inline-block bg-yellow-400 text-green-800 px-2 py-1 rounded-full text-[9px] sm:text-[10px] font-bold mb-2">
                           ⭐ BEST OFFER
@@ -242,12 +250,13 @@ const ScholarshipPopup = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white/70 rounded-lg p-2">
-                        <p className="text-[10px] sm:text-[11px] text-gray-700 flex items-center justify-center">
-                          <FaCheckCircle className="text-green-500 mr-1 text-xs" />
-                          10:00 AM - 1:00 PM
-                        </p>
-                      </div>
+                      <button
+                        onClick={handleEnrollNow}
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg px-3 py-2 font-bold text-[10px] sm:text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center group"
+                      >
+                        Register Now
+                        <FaArrowRight className="ml-1 text-[10px] group-hover:translate-x-1 transition-transform" />
+                      </button>
                     </motion.div>
                   ))}
                 </div>
